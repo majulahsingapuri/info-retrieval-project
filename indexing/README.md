@@ -19,3 +19,8 @@
 6. In the Sidebar, select the `Documents` tab under the Collection Selector
 7. Under Document Type, select `File Upload` and upload the `output.csv` file
 8. In the Sidebar, navigate to the `Query` tab and select `Execute Query` at the bottom of the page to verify that the records have been added.
+9. Once done using the server, type in the following command to stop the Solr server
+
+    ```bash
+    docker compose down
+    ```
