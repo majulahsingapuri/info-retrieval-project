@@ -22,5 +22,13 @@
 9. Once done using the server, type in the following command to stop the Solr server
 
     ```bash
-    docker compose down
+    docker compose stop
     ```
+
+## Querying
+
+Below is a list of the key querying tools that you will need to execute queries in the database.
+
+> q: (Query) The text that you want to search for in the dataset. e.g. `TEXT:*mini cooper*`.
+> fq: (Filter Query) Additional filters on the existing query. e.g. `YEAR:2021`.
+> fl: (Fields List): Comma separated list of fields that should be returned in the result. e.g. `YEAR,MODEL`.
