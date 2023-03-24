@@ -1,1 +1,7 @@
 .DS_Store
+
+# Ignore ipnyb checkpoints
+.ipynb_checkpoints/
+
+# Ignore the TFEEvents Directory
+test_trainer/
