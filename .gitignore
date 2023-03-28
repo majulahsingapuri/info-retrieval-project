@@ -5,6 +5,3 @@
 
 # Ignore the TFEEvents Directory
 test_trainer/
-
-# Ignore the TFEEvents Directory
-trained_model/
