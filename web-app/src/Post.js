@@ -1,3 +1,5 @@
+// for every post it receives, has 3 elements of an article 
+
 const Post = ({ post }) => {
     return (
         <article>

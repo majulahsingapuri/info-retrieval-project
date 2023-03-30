@@ -4,6 +4,7 @@ import SearchBar from './SearchBar'
 import ListPage from './ListPage'
 
 function App() {
+// setting the different states of the webapp
   const [posts, setPosts] = useState([])
   const [searchResults, setSearchResults] = useState([])
 
@@ -25,3 +26,4 @@ function App() {
 }
 
 export default App;
+
