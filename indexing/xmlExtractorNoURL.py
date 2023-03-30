@@ -1,21 +1,19 @@
 import xml.etree.ElementTree as ET
-import csv
+import pandas as pd
 
-
-tree = ET.parse('file.xml')
+tree = ET.parse('car_data.xml')
 root = tree.getroot()
 
-# Open a CSV file for writing the extracted data
-with open('car_data.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile)
-    # Write the header row
-    writer.writerow(['Year', 'Make', 'Model'])  
+car_data = []
 
-    for car in root.findall('.//car'):
-        year = car.find('year').text
-        make = car.find('make').text
-        model = car.find('model').text
-        # Write the data row
-        writer.writerow([year, make, model])  
+for car in root.findall('.//car'):
+    year = car.find('year').text
+    manufacturer = car.find('manufacturer').text
+    model = car.find('model').text
+    car_data.append({'Year': year, 'Manufacturer': manufacturer, 'Model': model})
 
-print("Data written to car_data.csv")
+df = pd.DataFrame(car_data)
+
+# Write the DataFrame to a new CSV file
+df.to_csv('car_data.csv', index=False)
+
