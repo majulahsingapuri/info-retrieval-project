@@ -1,4 +1,5 @@
 .DS_Store
+node_modules/
 
 # Ignore ipnyb checkpoints
 .ipynb_checkpoints/
