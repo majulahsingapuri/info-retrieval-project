@@ -1,26 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
+from dateutil.parser import parse
+import pandas as pd
+from typing import Optional
 import re
-import csv
 
-def scrape_car_reviews(manufacturer, model, year):
+def scrape_car_reviews(manufacturer: str, model: str, year: int) -> Optional[pd.DataFrame]:
     # Replace the spaces and dashes 
-    model = model.replace(" ", "_")                 #.replace("-", "_")
+    model = model.replace(" ", "_")                             #.replace("-", "_")
     model = model.replace("-", "_")
-    manufacturer = manufacturer.replace(" ", "_")                 #.replace("-", "_")
+    manufacturer = manufacturer.replace(" ", "_")               #.replace("-", "_")
     manufacturer = manufacturer.replace("-", "_")
     
     # Construct the URL 
     url = f"https://www.cars.com/research/{manufacturer}-{model}-{year}/consumer-reviews/?page_size=200"
     
-
-
     # Send a request to the URL and get the response
     response = requests.get(url)
+
     # Status Checking (Can deleted)
     if response.status_code != 200:
         print(f"Error: Request failed with status code {response.status_code}")
         return
+    
     # Parser generated
     soup = BeautifulSoup(response.text, "html.parser")
     
@@ -33,27 +35,23 @@ def scrape_car_reviews(manufacturer, model, year):
     for container in review_containers:
 
         # Find the title of the review
-        title = container.find(class_="review-card-header__title").text.strip()
+        title = container.find("h3", class_="sds-heading--7").text.strip()
         
         ###########################################################################
         
-        # Find the author of the review
-        author_data = container.find(class_="review-card-header__byline").text.strip()
+        # Find the author data of the review
+        author_data = container.find(class_="review-byline")
+        author_data = author_data.find_all("div")
+
+        # Find date
+        date = parse(author_data[0].text.strip())
+
+        ###########################################################################
 
         # Find regular expression pattern and search for match string
-        author_regex = re.compile(r"By (.+?) on")
-        author_match = author_regex.search(author_data)
+        author_regex = re.compile(r"By (.+?)")
+        author_match = author_regex.search(author_data[1].text.strip())
         author = author_match.group(1)
-
-        ##########################################################################
-
-        # Find the date of the review
-        date_data = container.find(class_="review-card-header__date").text.strip()               # maybe use author_data
-
-        # Find regular expression pattern and search for match string
-        date_regex = re.compile(r"on (.+)$")
-        date_match = date_regex.search(date_data)
-        date = date_match.group(1)
 
         ##########################################################################
         
@@ -70,16 +68,8 @@ def scrape_car_reviews(manufacturer, model, year):
             "Content": content
         })
     
-    # Write the extracted data to a new CSV file
-    with open(f"{manufacturer}_{model}_{year}_reviews.csv", "w", newline="") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=["Title", "Author", "Date", "Content"])
-        writer.writeheader()
-        # writer = csv.writer(csvfile)
-        writer.writerows(review_data)
+    df = pd.DataFrame.from_records(review_data)
+    # print(df)
+    return df
 
-        #writer.writerow([title, author, date, content])
-        
-    print(f"Data written to {manufacturer}_{model}_{year}_reviews.csv")
-
-
-#Example usage: scrape_car_reviews("nissan", "gtr", "2015")
+# scrape_car_reviews("honda", "hr-v", 2020)
