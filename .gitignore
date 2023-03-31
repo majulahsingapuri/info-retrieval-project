@@ -5,3 +5,4 @@
 
 # Ignore the TFEEvents Directory
 test_trainer/
+__pycache__/
