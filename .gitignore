@@ -1,2 +1,14 @@
 .DS_Store
+
+# For frontend
 node_modules/
+
+# For backend
+.venv/
+
+# Ignore ipnyb checkpoints
+.ipynb_checkpoints/
+
+# Ignore the TFEEvents Directory
+test_trainer/
+__pycache__/
