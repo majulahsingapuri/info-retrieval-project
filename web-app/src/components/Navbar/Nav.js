@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
-import logo from '../../logo.svg';
+import logo from '../../car2.webp';
 import './Nav.css';
 
 const Nav = () => {
@@ -10,7 +10,7 @@ const Nav = () => {
     <div className="car__navbar">
       <div className="car__navbar-links">
         <div className="car__navbar-links_logo">
-          <img src={logo} alt="App-car"/>
+          <img className="car_logo" src={logo} alt="App-car"/>
         </div>
         <div className="car__navbar-links_container">
           <p><a href="#home">Home</a></p>

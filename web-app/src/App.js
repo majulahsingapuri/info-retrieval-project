@@ -51,6 +51,7 @@ function App() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [start, setStart] = useState(0);
   const [maxRowNo, setMaxRowNo] = useState(0);
+  const [chart, setChart] = useState("");
   
   const [sortDirection, setSortDirection] = useState("desc");
   const [manufacturerFilter, setManufacturerFilter] = useState("All");
@@ -76,16 +77,16 @@ function App() {
   }
 
   // Flip Page
-  const handleChangeStart = (newStart) => {
+  const flipPage = (newStart) => {
     setLoading(true);
     let api = new API();
     api
     .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? currentSearchInput : '*:*'}&rows=${rowsPerPage}&start=${newStart}`))
     .then((data) => {
       setStart(newStart);
-      setComments(data.response.docs)
+      setComments(data.response.docs);
       setSpeedQ(data.responseHeader.QTime);
-      setMaxRowNo(data.response.numFound - 1)
+      setMaxRowNo(data.response.numFound - 1);
       setLoading(false);
     })
     .catch((error) => {
@@ -95,7 +96,7 @@ function App() {
   }
 
   const changeRowsPage = (event) => {
-    var previousRowsPerPage = rowsPerPage
+    var preRowPage = rowsPerPage
     setRowsPerPage(event.target.value)
     setLoading(true);
     let api = new API();
@@ -109,8 +110,8 @@ function App() {
       setLoading(false);
     })
     .catch((error) => {
-      setError("Something went wrong 2")
-      setRowsPerPage(previousRowsPerPage);
+      setError("Error found. Flip page error")
+      setRowsPerPage(preRowPage);
       setLoading(false);
     })
   }
@@ -139,8 +140,9 @@ function App() {
   const handleSearch = () => {
     setLoading(true);
     let api = new API();
+    console.log("hello", searchInput);
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? searchInput : '*:*'}&rows=${rowsPerPage}&start=0`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? `TEXT:*${searchInput}*` : '*:*'}&rows=${rowsPerPage}&start=0`))
     .then((data) => {
       setStart(0);
       setCurrentSearchInput(searchInput);
@@ -149,15 +151,27 @@ function App() {
       // get all json data
       setComments(data.response.docs);
       // get total result found
-      setMaxRowNo(data.response.numFound-1)
+      setMaxRowNo(data.response.numFound-1);
       setLoading(false);
       
     })
     .catch((error) => {
-      setError("Something went wrong 4");
+      setError("Error found. Unable to search");
       setLoading(false);
     })
   }
+
+  /*
+  const displayChart = () => {
+    setLoading(true);
+    let api = new API();
+    api
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? searchInput : '*:*'}&rows=${rowsPerPage}&start=0`))
+    .then((data) => {
+      
+    })
+  }
+  */
 
   const setError = (text) => {
     setErrorText(text);
@@ -169,27 +183,48 @@ function App() {
   }
 
   /*
-  const handleSearchInputChange = (e, newValue) => {
+  const searchBarInput = (e, newValue) => {
+    e.preventDefault();
     setSearchInput(e.target.value);
     if (e.target.value === "") {
       setSuggestions([]);
     } 
     else {
-      setAutocompleteLoading(true);
       let api = new API();
       api
       .get(`${ENDPOINT}/solr/info_retrieval/suggest?q=${e.target.value}&rows=10`)
       .then((data) => {
-        setAutocompleteLoading(false);
-        setSuggestions(data.suggest.mySuggester[`${e.target.value}`].suggestions)
+        setSuggestions(resultArray);
       })
       .catch((error) => {
-        setAutocompleteLoading(false);
         setSuggestions([]);
       })
     }
   }
   */
+
+  /*
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+*/
 
   return (
     <div className="App">
@@ -201,9 +236,12 @@ function App() {
           <div className='searchBarStyle_container'>
             <input type="search" placeholder="Input your search"
               value={searchInput}
-              onChange={(event, newValue) => {
-                setSearchInput(newValue);
-              }}/>
+              onChange={(event) => {
+                setSearchInput(event.target.value);
+                console.log("new 1", searchInput);
+                console.log("new 2", event.target.value);
+              }}
+            />
             <IconButton onClick={handleSearch}><SearchIcon /></IconButton>
           </div>
         <div className='carReviewStyle'>
@@ -234,7 +272,7 @@ function App() {
                 <CircularProgress size={40} />
             </div>
           ) : (
-            <List className="root">
+            <List className="transbox">
               {
                 comments.map((info_retrieval) =>
                   <ListItem key={info_retrieval.id} alignItems="flex-start">
@@ -242,13 +280,6 @@ function App() {
                       primary={
                         <React.Fragment>
                           <div className='contentStyle'>
-                            <Typography
-                              component="span"
-                              variant="body1"
-                              className="inline"
-                              color="textPrimary"
-                            >
-                            </Typography>
                             <b>{info_retrieval.year}</b>
                           </div>
                             <table>
@@ -289,16 +320,25 @@ function App() {
             <div>
               <h5>Displaying {start+1} to {start+rowsPerPage > maxRowNo ? maxRowNo+1 : start+rowsPerPage} of {maxRowNo+1} comments.</h5>
               <div>
-                <IconButton onClick={() => {handleChangeStart(start-rowsPerPage)}} disabled={start === 0 ? true : false} >
+                <IconButton onClick={() => {flipPage(start-rowsPerPage)}} disabled={start === 0 ? true : false} >
                   <ArrowBackIosIcon />
                 </IconButton>
-                <IconButton onClick={() => {handleChangeStart(start+rowsPerPage)}} disabled={start+rowsPerPage > maxRowNo ? true : false}>
+                <IconButton onClick={() => {flipPage(start+rowsPerPage)}} disabled={start+rowsPerPage > maxRowNo ? true : false}>
                   <ArrowForwardIosIcon />
                 </IconButton>
               </div>
-            </div>
-          )
-        }
+              <div>
+              <div>
+              </div>
+
+                <script>
+                  
+                </script>
+
+                </div>
+              </div>
+            )
+          }
       </div>
       <div style={{marginTop: "10px"}}/>
       <Snackbar 
