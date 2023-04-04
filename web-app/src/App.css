@@ -1,10 +1,5 @@
-.App {
+.Head {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
 }
 
 .App-header {
@@ -68,11 +63,19 @@ a {
   display : inline;
 }
 
+/* Search Bar Styling*/
 .searchBarStyle{
-  margin-top: "10px";
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+
+  margin-right: 5rem;
 }
 
 .searchBarStyle_container{
+  /*
   display: flex;
   justify-content: center;
   align-items: center;
@@ -80,13 +83,64 @@ a {
   border: 2px solid;
   padding: "10px";
   border-color: #b68181;
+  */
+  width: 100%;
+  margin: 2rem 0 1rem;
+
+  display: flex;
+  flex-direction: row;
 }
 
+.searchBarStyle_container input {
+  flex: 2;
+  width: 100%;
+  min-height: 50px;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  background: var(--color-footer);
+  border: 2px solid var(--color-footer);
+  padding: 0 1rem;
+  outline: none;
+  color: #fff;
+
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.searchBarStyle_container button {
+  flex: 0.6;
+  width: 30%;
+  min-height: 50px;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  background: #FF4820;
+  border: 2px solid #FF4820;
+  padding: 0 1rem;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* Title and Row/Sort/Filter */
 .carReviewStyle{
   width: "60vw";
   display: flex;
   justify-content : space-between;
   align-items: center;
+}
+
+.carReviewStyle h1 {
+  background: var(--gradient-text);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .carReviewStyle_container{
@@ -95,6 +149,7 @@ a {
   justify-content: space-between;
 }
 
+/* Loading */
 .loadingStyle{
   width: "100%"; 
   height: auto;
@@ -121,28 +176,3 @@ td,th{
 }
 
 /* Chart  */
-.chartMenu {
-  width: 100vw;
-  height: 40px;
-  background: #1A1A1A;
-  color: rgba(54, 162, 235, 1);
-}
-.chartMenu p {
-  padding: 10px;
-  font-size: 20px;
-}
-.chartCard {
-  width: 100vw;
-  height: calc(100vh - 40px);
-  background: rgba(54, 162, 235, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.chartBox {
-  width: 700px;
-  padding: 20px;
-  border-radius: 20px;
-  border: solid 3px rgba(54, 162, 235, 1);
-  background: white;
-}

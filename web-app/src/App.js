@@ -24,13 +24,26 @@ import {
   Fab
 } from '@material-ui/core';
 import {Autocomplete} from '@autocomplete/material-ui';
-import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import API, { ENDPOINT }  from "./components/API";
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Nav from './components/Navbar/Nav';
+import { 
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend
+} from 'chart.js'
+
+import { Pie } from 'react-chartjs-2';
+
+ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend
+)
 
 const carList = [
   "All",
@@ -225,28 +238,34 @@ function App() {
     }
   });
 */
+  const data = {
+    labels: ['one','two'],
+    datasets:[
+        {data: [4, 7],
+        backgroundColor: ['aqua', 'purple']}
+    ]
+  }
 
   return (
-    <div className="App">
+    <div className="Head">
       <div className="gradient__bg">
         <Nav />
       </div>
       <div className="Body">
-        <div className='searchBarStyle' />
+        <div className='searchBarStyle'>
           <div className='searchBarStyle_container'>
             <input type="search" placeholder="Input your search"
               value={searchInput}
               onChange={(event) => {
                 setSearchInput(event.target.value);
-                console.log("new 1", searchInput);
-                console.log("new 2", event.target.value);
               }}
             />
-            <IconButton onClick={handleSearch}><SearchIcon /></IconButton>
+            <button type="button" onClick={handleSearch}>Search</button>
           </div>
+        </div>
         <div className='carReviewStyle'>
           <h1>Car Review</h1>
-          <h5>Search Query Speed : {speedQ}</h5>
+          <p>Search Query Speed : {speedQ}</p>
           <div className='carReviewStyle_container'>
             <FormControl variant="outlined" className="formControlStyle">
               <InputLabel>Rows</InputLabel>
@@ -327,18 +346,26 @@ function App() {
                   <ArrowForwardIosIcon />
                 </IconButton>
               </div>
+
               <div>
               <div>
-              </div>
-
-                <script>
-                  
-                </script>
-
+                <div style = {
+                    {
+                    padding:'20px',
+                    width:"50%"
+                    }
+                } > 
+                <Pie 
+                    data={data}
+                    >
+                    </Pie>
                 </div>
               </div>
-            )
-          }
+            </div>
+
+          </div>
+          )
+        }
       </div>
       <div style={{marginTop: "10px"}}/>
       <Snackbar 
