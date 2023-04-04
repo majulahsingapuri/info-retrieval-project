@@ -65,6 +65,7 @@ function App() {
   const [start, setStart] = useState(0);
   const [maxRowNo, setMaxRowNo] = useState(0);
   const [chart, setChart] = useState("");
+  const [votes, setVotes] = useState("");
   
   const [sortDirection, setSortDirection] = useState("desc");
   const [manufacturerFilter, setManufacturerFilter] = useState("All");
@@ -156,7 +157,6 @@ function App() {
   const handleSearch = () => {
     setLoading(true);
     let api = new API();
-    console.log("hello", searchInput);
     api
     .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? `TEXT:${searchInput}` : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
@@ -188,33 +188,19 @@ function App() {
     setErrorBarOpen(false);
   }
 
-  /*
-  const searchBarInput = (e, newValue) => {
-    e.preventDefault();
-    setSearchInput(e.target.value);
-    if (e.target.value === "") {
-      setSuggestions([]);
-    } 
-    else {
-      let api = new API();
-      api
-      .get(`${ENDPOINT}/solr/info_retrieval/suggest?q=${e.target.value}&rows=10`)
-      .then((data) => {
-        setSuggestions(resultArray);
-      })
-      .catch((error) => {
-        setSuggestions([]);
-      })
-    }
-  }
-  */
-
+  // Pie Chart
   const data = {
     labels: ['one','two'],
     datasets:[
         {data: [4, 7],
         backgroundColor: ['aqua', 'purple']}
     ]
+  }
+
+  const voteCounter = (event) =>{
+    console.log("votes:", votes);
+    //console.log("id:", id);
+    //console.log("vote:", votes);
   }
 
   return (
@@ -272,6 +258,7 @@ function App() {
                           <div className='contentStyle'>
                           </div>
                             <table>
+                            <tr><th>Year</th><td>{info_retrieval.id}</td></tr>
                               <tr><th>Year</th><td>{info_retrieval.YEAR}</td></tr>
                               <tr><th>Text</th><td>{info_retrieval.TEXT}</td></tr>
                               <tr><th>Manufacturer</th><td>{info_retrieval.MANUFACTURER}</td></tr>
@@ -291,6 +278,14 @@ function App() {
                           >
                             Comment by {info_retrieval.AUTHOR} on {new Date(info_retrieval.DATE).toLocaleDateString()}
                           </Typography>
+                          <Fab variant="extended" label="Button" color="primary">
+                            <b>Useful</b>
+                          </Fab>
+                          <span style={{marginLeft: "20px"}}>
+                            <Fab variant="extended" label="Button" color="primary">
+                              <b>Not Useful</b>
+                            </Fab>
+                          </span>
                           <div />
                         </React.Fragment>
                       }
@@ -404,45 +399,3 @@ function App() {
 }
 
 export default App;
-
-/*
-        <Autocomplete
-          style={{width: "100%"}}
-          freeSolo
-          open={open}
-          onOpen={() => {
-            setOpen(true);
-          }}
-          onClose={() => {
-            setOpen(false);
-          }}
-          disableClearable
-          value={searchInput}
-          onChange={(event, newValue) => {
-            setSearchInput(newValue);
-          }}
-          options={suggestions.map((suggestion) => suggestion.term)}
-          loading={autocompleteLoading}
-          renderInput={(params) => (
-            <TextField
-              style={{margin: "10px"}}
-              {...params}
-              label="Search"
-              margin="normal"
-              variant="outlined"
-              value={searchInput}
-              onChange={handleSearchInputChange}
-              InputProps={{ 
-                ...params.InputProps, 
-                type: 'search',
-                endAdornment: (
-                  <React.Fragment>
-                    {autocompleteLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
-                  </React.Fragment>
-                ),
-              }}
-            />
-          )}
-          />
-*/
