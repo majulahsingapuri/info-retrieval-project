@@ -81,10 +81,10 @@ function App() {
       baseQuery += `&sort=${sortDirection}`
     }
     if (manufacturerFilter !== "All") {
-      baseQuery += `&fq=manufacturer:"${manufacturerFilter}"`
+      baseQuery += `&fq=MANUFACTURER:"${manufacturerFilter}"`
     }
     if (yearFilter !== "All") {
-      baseQuery += `&fq=year:${yearFilter}`
+      baseQuery += `&fq=YEAR:${yearFilter}`
     }
     return baseQuery
   }
@@ -94,12 +94,13 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? currentSearchInput : '*:*'}&rows=${rowsPerPage}&start=${newStart}`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? `TEXT:${currentSearchInput}` : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(newStart);
       setComments(data.response.docs);
       setSpeedQ(data.responseHeader.QTime);
       setMaxRowNo(data.response.numFound - 1);
+      setChart(data.stats.stats_fields.LABEL.sum);
       setLoading(false);
     })
     .catch((error) => {
@@ -114,12 +115,13 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? currentSearchInput : '*:*'}&rows=${event.target.value}&start=0`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? `TEXT:${currentSearchInput}` : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setComments(data.response.docs)
       setSpeedQ(data.responseHeader.QTime);
       setMaxRowNo(data.response.numFound - 1);
+      setChart(data.stats.stats_fields.LABEL.sum);
       setLoading(false);
     })
     .catch((error) => {
@@ -135,12 +137,13 @@ function App() {
       setLoading(true);
       let api = new API();
       api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? currentSearchInput : '*:*'}&rows=${rowsPerPage}&start=0`))
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? `TEXT:${currentSearchInput}` : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
       .then((data) => {
         setStart(0);
         setComments(data.response.docs);
         setSpeedQ(data.responseHeader.QTime);
         setMaxRowNo(data.response.numFound-1);
+        setChart(data.stats.stats_fields.LABEL.sum);
         setLoading(false);
       })
       .catch((error) => {
@@ -155,7 +158,7 @@ function App() {
     let api = new API();
     console.log("hello", searchInput);
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? `TEXT:*${searchInput}*` : '*:*'}&rows=${rowsPerPage}&start=0`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? `TEXT:${searchInput}` : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setCurrentSearchInput(searchInput);
@@ -165,6 +168,8 @@ function App() {
       setComments(data.response.docs);
       // get total result found
       setMaxRowNo(data.response.numFound-1);
+      // get Label sum
+      setChart(data.stats.stats_fields.LABEL.sum);
       setLoading(false);
       
     })
@@ -173,18 +178,6 @@ function App() {
       setLoading(false);
     })
   }
-
-  /*
-  const displayChart = () => {
-    setLoading(true);
-    let api = new API();
-    api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? searchInput : '*:*'}&rows=${rowsPerPage}&start=0`))
-    .then((data) => {
-      
-    })
-  }
-  */
 
   const setError = (text) => {
     setErrorText(text);
@@ -216,28 +209,6 @@ function App() {
   }
   */
 
-  /*
-  const ctx = document.getElementById('myChart');
-
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-      datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-*/
   const data = {
     labels: ['one','two'],
     datasets:[
@@ -299,13 +270,14 @@ function App() {
                       primary={
                         <React.Fragment>
                           <div className='contentStyle'>
-                            <b>{info_retrieval.year}</b>
                           </div>
                             <table>
+                              <tr><th>Year</th><td>{info_retrieval.YEAR}</td></tr>
                               <tr><th>Text</th><td>{info_retrieval.TEXT}</td></tr>
-                              <tr><th>Favorite</th><td>{info_retrieval.FAVORITE}</td></tr>
-                              <tr><th>Manufacturer</th><td>{info_retrieval.manufacturer}</td></tr>
-                              <tr><th>Model</th><td>{info_retrieval.model}</td></tr>
+                              <tr><th>Manufacturer</th><td>{info_retrieval.MANUFACTURER}</td></tr>
+                              <tr><th>Model</th><td>{info_retrieval.MODEL}</td></tr>
+                              <tr><th>Label</th><td>{info_retrieval.LABEL}</td></tr>
+                              <tr><th>Votes</th><td>{info_retrieval.VOTES}</td></tr>
                             </table>
                         </React.Fragment>
                       }
@@ -349,6 +321,7 @@ function App() {
 
               <div>
               <div>
+                <p>Label sum : {chart}</p>
                 <div style = {
                     {
                     padding:'20px',
@@ -418,8 +391,8 @@ function App() {
                 label="Manufacturer"
               >
                 {
-                  carList.map((manufacturer) => 
-                    <MenuItem value={`${manufacturer}`}>{manufacturer}</MenuItem>
+                  carList.map((MANUFACTURER) => 
+                    <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
                   )
                 }
               </Select>
