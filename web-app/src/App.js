@@ -53,9 +53,8 @@ const carList = [
 ];
 
 function App() {
-  const [suggestions, setSuggestions] = useState([])
-  const [autocompleteLoading, setAutocompleteLoading] = useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [suggestSearch, setSuggestSearch] = useState([]);
+  const [autoComSearch, setAutoComSearch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [speedQ, setSpeedQ] = useState("");
@@ -73,8 +72,9 @@ function App() {
 
   const [errorBarOpen, setErrorBarOpen] = React.useState(false);
   const [errorText, setErrorText] = React.useState('');
-
   const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  
 
   // Filter Query
   const createQuery = (baseQuery) => {
@@ -188,6 +188,16 @@ function App() {
     setErrorBarOpen(false);
   }
 
+  // Suggest
+  const handleTokenization = (event) => {
+    searchInput(event.target.value);
+    let api = new API();
+    api
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/suggest?q=${event.target.value}&rows=10`))
+    .then((data) => {
+    })
+  }
+
   // Pie Chart
   const data = {
     labels: ['one','two'],
@@ -197,6 +207,7 @@ function App() {
     ]
   }
 
+  // Vote
   const voteCounter = (event) =>{
     console.log("votes:", votes);
     //console.log("id:", id);
@@ -212,8 +223,7 @@ function App() {
         <div className='searchBarStyle'>
           <div className='searchBarStyle_container'>
             <input type="search" placeholder="Input your search"
-              value={searchInput}
-              onChange={(event) => {
+              value={searchInput} onChange={(event) => { 
                 setSearchInput(event.target.value);
               }}
             />
@@ -286,8 +296,8 @@ function App() {
                               <b>Not Useful</b>
                             </Fab>
                           </span>
-                          <div />
-                        </React.Fragment>
+                        <div />
+                      </React.Fragment>
                       }
                     />
                   </ListItem>
