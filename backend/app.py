@@ -12,7 +12,7 @@ config:Config
 # Set up Transformers
 model = AutoModelForSequenceClassification.from_pretrained(config.model_path, num_labels=2,ignore_mismatched_sizes=True)
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment-latest")
-pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, max_length=512, truncation=True, batch_size=16)
+pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, padding="max_length", truncation=True, batch_size=16)
 
 # Set up Flask
 app = Flask(__name__)
