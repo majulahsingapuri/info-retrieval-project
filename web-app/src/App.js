@@ -42,12 +42,41 @@ ChartJS.register(
     Title
 )
 
+const yearList = [
+  "All",
+  "2000", "2001", "2002", "2003", "2004",
+  "2005", "2006", "2007", "2008", "2009",
+  "2010", "2011", "2012", "2013", "2014",
+  "2015", "2016", "2017", "2018", "2019",
+  "2020", "2021", "2022", "2023"
+];
+
 const carList = [
   "All",
-  "toyota",
+  "mercedes-benz",
+  "lexus",
+  "honda",
+  "nissan",
+  "volkswagen",
+  "volvo",
+  "mazda",
   "bmw",
-  "mini",
+  "audi"
 ];
+
+const modelList = [
+  "All", "gl-class",  "rx 350",  "cr-v",  "sentra",  "passat",  "maxima",
+  "new beetle",  "rogue",  "civic",  "frontier",  "c-class",  "versa",
+  "jetta",  "s80",  "is 250",  "fit",  "r32",  "tribute",  "altima",
+  "xterra",  "clk-class",  "ridgeline",  "e-class",  "v50",  "c70",
+  "mx-5 miata",  "3 series",  "350z",  "slk-class",  "xc70",  "s8",  "x5",
+  "5 series",  "rabbit",  "s-class",  "a5",  "element",  "x3",  "mazdaspeed mazda6",
+  "mazda3",  "altima hybrid",  "c30",  "cx-7",  "gs 350",  "q7",  "pathfinder",  "quest",
+  "m-class",  "a3",  "ls 460",  "1 series",  "titan",  "pilot",  "gti",  "6 series",  "cx-9",
+  "tt",  "mazda5",  "odyssey",  "7 series",  "eos",  "mazda6 gli",  "a4",  "s40",  "a8",  "rs4",
+  "a6",  "xc90",  "armada",  "cls-class",  "gs 450h",  "m3",  "is 350",  "is f",  "es 350",
+  "r-class",  "sl-class",  "rx 400h",  "x6",  "v70"
+]
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -63,6 +92,7 @@ function App() {
   const [sortDirection, setSortDirection] = useState("desc");
   const [manufacturerFilter, setManufacturerFilter] = useState("All");
   const [yearFilter, setYearFilter] = useState("All");
+  const [modelFilter, setModelFilter] = useState("All");
 
   const [errorBarOpen, setErrorBarOpen] = React.useState(false);
   const [errorText, setErrorText] = React.useState('');
@@ -136,6 +166,9 @@ function App() {
     }
     if (yearFilter !== "All") {
       baseQuery += `&fq=YEAR:${yearFilter}`
+    }
+    if (modelFilter !== "All") {
+      baseQuery += `&fq=MODEL:${modelFilter}`
     }
     return baseQuery
   }
@@ -371,22 +404,27 @@ function App() {
           <FormControl component="fieldset" className="formControlStyle">
             <FormLabel component="legend">Direction</FormLabel>
             <RadioGroup value={sortDirection} onChange={(event) => {setSortDirection(event.target.value)}}>
-              <FormControlLabel value="desc" control={<Radio />} label="Descending" />
-              <FormControlLabel value="asc" control={<Radio />} label="Ascending" />
+              <FormControlLabel value="desc" control={<Radio />} label="Most Helpful" />
+              <FormControlLabel value="asc" control={<Radio />} label="Least Helpful" />
             </RadioGroup>
           </FormControl>
         </DialogContent>
         <DialogTitle><b>Filter</b></DialogTitle>
         <DialogContent dividers>
           <div />
-          <FormControl component="fieldset" className="formControlStyle">
+          <FormControl variant="outlined" className="formControlStyle">
             <FormLabel component="legend">Year</FormLabel>
-            <RadioGroup value={yearFilter} onChange={(event) => {setYearFilter(event.target.value)}}>
-              <FormControlLabel value="All" control={<Radio />} label="All" />
-              <FormControlLabel value="2007" control={<Radio />} label="2007" />
-              <FormControlLabel value="2008" control={<Radio />} label="2008" />
-              <FormControlLabel value="2009" control={<Radio />} label="2009" />
-            </RadioGroup>
+              <Select
+                value={yearFilter}
+                onChange={(event) => {setYearFilter(event.target.value)}}
+                label="Year"
+              >
+              {
+                yearList.map((YEAR) => 
+                  <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
+                )
+              }
+              </Select>
           </FormControl>
           <div />
           <FormControl variant="outlined" className="formControlStyle">
@@ -404,6 +442,22 @@ function App() {
                 }
               </Select>
           </FormControl>
+          <div />
+          <FormControl variant="outlined" className="formControlStyle">
+            <FormLabel component="legend">Model</FormLabel>
+              <Select
+                value={modelFilter}
+                onChange={(event) => {setModelFilter(event.target.value)}}
+                label="Manufacturer"
+              >
+                {
+                  modelList.map((MODEL) => 
+                    <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
+                    
+                  )
+                }
+              </Select>
+          </FormControl>
         </DialogContent>
       </Dialog>
     </div>
@@ -411,3 +465,12 @@ function App() {
 }
 
 export default App;
+
+/*
+<RadioGroup value={yearFilter} onChange={(event) => {setYearFilter(event.target.value)}}>
+  <FormControlLabel value="All" control={<Radio />} label="All" />
+  <FormControlLabel value="2007" control={<Radio />} label="2007" />
+  <FormControlLabel value="2008" control={<Radio />} label="2008" />
+  <FormControlLabel value="2009" control={<Radio />} label="2009" />
+</RadioGroup>
+*/
