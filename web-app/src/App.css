@@ -128,7 +128,7 @@ a {
   border-bottom-right-radius: 5px;
 }
 
-/* Title and Row/Sort/Filter */
+/* Title */
 .carReviewStyle{
   width: "60vw";
   display: flex;
@@ -137,16 +137,16 @@ a {
 }
 
 .carReviewStyle h1 {
-  background: var(--gradient-text);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+background: var(--gradient-text);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
 }
 
 .carReviewStyle_container{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+display: flex;
+align-items: center;
+justify-content: space-between;
 }
 
 /* Loading */
@@ -156,23 +156,6 @@ a {
   display: flex;
   justify-content: center;
   align-items: center
-}
-
-.contentStyle{
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  
-}
-
-/* Dataset Table  */
-table, td, tr{
-  border: 1px solid;
-  border-collapse: collapse;
-}
-
-td,th{
-  padding: 10px;
 }
 
 /* Chart  */

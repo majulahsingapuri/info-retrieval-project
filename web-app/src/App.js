@@ -18,7 +18,6 @@ import {
   Radio,
   FormControlLabel,
 } from '@material-ui/core';
-import {Autocomplete} from '@autocomplete/material-ui';
 import CloseIcon from '@material-ui/icons/Close';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import API, { ENDPOINT }  from "./components/API";
@@ -70,7 +69,14 @@ function App() {
   const [errorText, setErrorText] = React.useState('');
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  
+  // Pie Chart
+  const data = {
+    labels: ['one','two'],
+    datasets:[
+        {data: [4, 7],
+        backgroundColor: ['aqua', 'purple']}
+    ]
+  }
 
   // Filter Query
   const createQuery = (baseQuery) => {
@@ -208,32 +214,6 @@ function App() {
     setErrorBarOpen(false);
   }
 
-  // Suggest
-  const handleTokenization = (event) => {
-    searchInput(event.target.value);
-    let api = new API();
-    api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/suggest?q=${event.target.value}&rows=10`))
-    .then((data) => {
-    })
-  }
-
-  // Pie Chart
-  const data = {
-    labels: ['one','two'],
-    datasets:[
-        {data: [4, 7],
-        backgroundColor: ['aqua', 'purple']}
-    ]
-  }
-
-  // Vote
-  const voteCounter = (event) =>{
-    console.log("votes:", votes);
-    //console.log("id:", id);
-    //console.log("vote:", votes);
-  }
-
   return (
     <div className="Head">
       <div className="gradient__bg">
@@ -281,9 +261,10 @@ function App() {
             <List className="transbox">
               {
                 comments.map((info_retrieval) =>
-                  <Post info_retrieval={info_retrieval} />
+                  <Post key={info_retrieval.id} info_retrieval={info_retrieval} />                  
                 )
               }
+              
             </List>   
           )
         }
@@ -310,7 +291,7 @@ function App() {
                 <div style = {
                     {
                     padding:'20px',
-                    width:"50%"
+                    width:"30%"
                     }
                 } > 
                 <Pie 
@@ -378,6 +359,7 @@ function App() {
                 {
                   carList.map((MANUFACTURER) => 
                     <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
+                    
                   )
                 }
               </Select>
