@@ -8,28 +8,40 @@ import {
   } from '@material-ui/core';
 import API, { ENDPOINT }  from "../../Api/API";
 
-const Post = ({info_retrieval}) => {
-    const [votes, setVotes] = useState("");
-
-    const updateVotingsData = {
-        "DATE": [info_retrieval.DATE],
-        "AUTHOR":[info_retrieval.AUTHOR],
-        "TEXT":[info_retrieval.TEXT],
-        "YEAR":[info_retrieval.YEAR],
-        "MANUFACTURER":[info_retrieval.MANUFACTURER],
-        "MODEL":[info_retrieval.MODEL],
-        "LABEL":[info_retrieval.LABEL],
-        "VOTES":[info_retrieval.votes+1],
-        "id": info_retrieval.id
-    }
+const Post = ({info_retrieval, handleSearch}) => {
+    const [post, setPost] = useState(info_retrieval);
     
-    const updateVote = (e) => {
+    const updateVote = (num) => {
+        const updateVotingsData = {
+            "DATE": [info_retrieval.DATE],
+            "AUTHOR":[info_retrieval.AUTHOR],
+            "TEXT":[info_retrieval.TEXT],
+            "YEAR":[info_retrieval.YEAR],
+            "MANUFACTURER":[info_retrieval.MANUFACTURER],
+            "MODEL":[info_retrieval.MODEL],
+            "LABEL":[info_retrieval.LABEL],
+            "VOTES":[info_retrieval.votes+num],
+            "id": info_retrieval.id
+        }
+
         let api = new API();
         api
-        .get(`${ENDPOINT}/solr/info_retrieval/update?q=${e.target.value}&start=0`)
+        .post(`${ENDPOINT}/solr/info_retrieval/update/json/docs?commitWithin=1000&overwrite=true`, updateVotingsData)
         .then((data) => {
-            setVotes(data.responseHeader);
+            console.log("data: ", data);
+            setPost(updateVotingsData);
+            handleSearch()
         });
+    }
+
+    // Print label in words
+    const displayWord = (getLabel) =>{
+        if(getLabel == 1){
+            return "Postive"
+        }
+        if(getLabel == 0){
+            return "Negative"
+        }
     }
 
     return (
@@ -42,12 +54,11 @@ const Post = ({info_retrieval}) => {
                         <div className='contentStyle'>
                         </div>
                         <table>
-                            <tr><th>Id</th><td>{info_retrieval.id}</td></tr>
                             <tr><th>Year</th><td>{info_retrieval.YEAR}</td></tr>
                             <tr><th>Text</th><td>{info_retrieval.TEXT}</td></tr>
                             <tr><th>Manufacturer</th><td>{info_retrieval.MANUFACTURER}</td></tr>
                             <tr><th>Model</th><td>{info_retrieval.MODEL}</td></tr>
-                            <tr><th>Label</th><td>{info_retrieval.LABEL}</td></tr>
+                            <tr><th>Label</th><td>{displayWord(info_retrieval.LABEL)}</td></tr>
                             <tr><th>Votes</th><td>{info_retrieval.VOTES}</td></tr>
                         </table>
                     </React.Fragment>
@@ -58,9 +69,9 @@ const Post = ({info_retrieval}) => {
                             Comment by {info_retrieval.AUTHOR} on {new Date(info_retrieval.DATE).toLocaleDateString()}
                         </Typography>
                         <p>
-                            <button className='usefulnessStyle1' label="Button">Useful</button>
+                            <button className='usefulnessStyle1' label="Button" onClick={() => updateVote(1)}>Useful</button>
                             <span className='usefulnessSpan'>
-                                <button className='usefulnessStyle2' label="Button">Not Useful</button>
+                                <button className='usefulnessStyle2' label="Button" onClick={() => updateVote(-1)}>Not Useful</button>
                             </span>
                         </p>
                         <div />

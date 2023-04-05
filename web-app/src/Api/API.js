@@ -16,6 +16,18 @@ export default class API {
         });
     });
   }
+  post(path, data) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(path, data)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          reject(error.response);
+        });
+    });
+  }
 
 }
 

@@ -119,11 +119,20 @@ function App() {
 
   // Filter Query
   const createQuery = (baseQuery) => {
-    if (sortDirection !== "desc") {
-      baseQuery += `&sort=${sortDirection}`
+    if (sortDirection == "desc") {
+      console.log(sortDirection);
+      console.log("this is the originial base query:", baseQuery);
+      baseQuery = baseQuery + `&sort=VOTES`+`%20`+ `${sortDirection}`
+      console.log("this is the base query:", baseQuery);
+    }
+    if (sortDirection == "asc") {
+      console.log(sortDirection);
+      console.log("this is the originial base query for asc:", baseQuery);
+      baseQuery = baseQuery + `&sort=VOTES`+`%20`+ `${sortDirection}`
+      console.log("this is the base query for asc:", baseQuery);
     }
     if (manufacturerFilter !== "All") {
-      baseQuery += `&fq=MANUFACTURER:"${manufacturerFilter}"`
+      baseQuery += `&fq=MANUFACTURER:${manufacturerFilter}`
     }
     if (yearFilter !== "All") {
       baseQuery += `&fq=YEAR:${yearFilter}`
@@ -300,7 +309,7 @@ function App() {
             <List className="transbox">
               {
                 comments.map((info_retrieval) =>
-                  <Post key={info_retrieval.id} info_retrieval={info_retrieval} />                  
+                  <Post key={info_retrieval.id} info_retrieval={info_retrieval} handleSearch={handleSearch} />                  
                 )
               }
               
