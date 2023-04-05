@@ -19,7 +19,7 @@ var client = new SolrNode({
     protocol : 'http'
 })
 
-client.delete(updateVoting, function(err, result){
+client.update(updateVoting, function(err, result){
     if(err){
         console.log(err);
         return;

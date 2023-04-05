@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import API, { ENDPOINT }  from "./components/API";
+import API, { ENDPOINT }  from "./Api/API";
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Nav from './components/Navbar/Nav';
@@ -29,7 +29,8 @@ import {
     Chart as ChartJS,
     ArcElement,
     Tooltip,
-    Legend
+    Legend,
+    Title
 } from 'chart.js'
 
 import { Pie } from 'react-chartjs-2';
@@ -37,7 +38,8 @@ import { Pie } from 'react-chartjs-2';
 ChartJS.register(
     ArcElement,
     Tooltip,
-    Legend
+    Legend,
+    Title
 )
 
 const carList = [
@@ -48,8 +50,6 @@ const carList = [
 ];
 
 function App() {
-  const [suggestSearch, setSuggestSearch] = useState([]);
-  const [autoComSearch, setAutoComSearch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [speedQ, setSpeedQ] = useState("");
@@ -59,7 +59,6 @@ function App() {
   const [start, setStart] = useState(0);
   const [maxRowNo, setMaxRowNo] = useState(0);
   const [chart, setChart] = useState({});
-  const [votes, setVotes] = useState("");
   
   const [sortDirection, setSortDirection] = useState("desc");
   const [manufacturerFilter, setManufacturerFilter] = useState("All");
@@ -69,14 +68,54 @@ function App() {
   const [errorText, setErrorText] = React.useState('');
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  // Pie Chart
-  const data = {
-    labels: ['one','two'],
-    datasets:[
-        {data: [4, 7],
-        backgroundColor: ['aqua', 'purple']}
-    ]
+  // Tokenisation
+  const getText = (str) => {
+    return `TEXT:${str}`;
   }
+  
+  const tokenizeSentence = (input) => {
+    // Split the input string into an array of words using space as the delimiter
+    let words = input.split(" ");
+    
+    // Create a new array to store the tokens
+    let tokens = [];
+    
+    // Iterate over the words and add them to the tokens array
+    for (let i = 0; i < words.length; i++) {
+      // Remove any leading or trailing punctuation from the word
+      let token = words[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+      
+      // Add the token to the array if it's not empty
+      if (token !== '') {
+        tokens.push(`${getText(token)}`);
+      }
+    }
+    
+    // Join the array of tokens with a line break (\n) and return as a single string
+    return tokens.join(" \\n ");
+  }
+  
+  // Pie Chat
+  const options = {
+    maintainAspectRatio: false,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom'
+      },
+      title: {
+        display: true,
+        text: 'Sentiment Overview',
+        font: {
+          size: 18,
+          family: 'Arial',
+          weight: 'bold'
+        },
+        color: 'black'
+      }
+    }
+  };
 
   // Filter Query
   const createQuery = (baseQuery) => {
@@ -97,7 +136,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? `TEXT:${currentSearchInput}` : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(newStart);
       setComments(data.response.docs);
@@ -124,7 +163,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? `TEXT:${currentSearchInput}` : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setComments(data.response.docs)
@@ -152,7 +191,7 @@ function App() {
       setLoading(true);
       let api = new API();
       api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? `TEXT:${currentSearchInput}` : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
       .then((data) => {
         setStart(0);
         setComments(data.response.docs);
@@ -178,7 +217,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? `TEXT:${searchInput}` : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setCurrentSearchInput(searchInput);
@@ -285,24 +324,16 @@ function App() {
                   <ArrowForwardIosIcon />
                 </IconButton>
               </div>
-
               <div>
-              <div>
-                <div style = {
-                    {
-                    padding:'20px',
-                    width:"30%"
-                    }
-                } > 
-                <Pie 
+                <div className='PieStyle'> 
+                  <Pie 
                     data={chart}
+                    options={options}
                     >
-                    </Pie>
+                  </Pie>
                 </div>
               </div>
             </div>
-
-          </div>
           )
         }
       </div>

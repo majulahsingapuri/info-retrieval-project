@@ -1,13 +1,18 @@
-/* Table */
+/* Dataset Table */
+.listStyle{
+  align-items: flex-start;
+}
+
+.listItemStyle{
+  padding: 10px;
+}
 
 .contentStyle{
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  
 }
 
-/* Dataset Table  */
 table, td, tr{
   border: 1px solid;
   border-collapse: collapse;
@@ -15,4 +20,52 @@ table, td, tr{
 
 td,th{
   padding: 10px;
+}
+
+/* Usefulness Button  */
+.usefulnessStyle1{
+  font-size: 16px;
+  padding: 10px 24px;
+  border-radius: 10%;
+  background-color: gray;
+  color: white;
+  margin-left: 30px;
+}
+
+.usefulnessStyle1:hover {
+  background-color: white; /* Green */
+  color: grey;
+}
+
+.usefulnessSpan{
+  margin-left: 20px;
+}
+
+.usefulnessStyle2{
+  font-size: 16px;
+  padding: 10px 24px;
+  border-radius: 10%;
+  background-color: gray;
+  color: white;
+}
+
+.usefulnessStyle2:hover {
+  background-color: white; /* Green */
+  color: grey;
+}
+
+/* Dataset Card */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+  width: 70%;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+  padding: 2px 16px;
 }

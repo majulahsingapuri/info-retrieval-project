@@ -1,12 +1,5 @@
 import axios from 'axios';
 
-const heades = {
-  headers: { 'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': '*',
-  'Access-Control-Allow-Headers': '*' }
-};
-
 // Solr Server IP Address
 export const ENDPOINT = 'http://127.0.0.1:8983';
 
@@ -23,6 +16,21 @@ export default class API {
         });
     });
   }
+
+}
+
+const postDate = () => {
+  axios.post('/localhost:5000', {
+    MANUFACTURER: '',
+    MODEL: '',
+    YEAR: '',
+  })
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 }
 
 /*
