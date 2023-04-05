@@ -3,7 +3,7 @@
 ## First Time Setup
 
 1. Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
-2. Open a terminal at this directory and run the following command to set up the Solr environment
+2. Open a terminal at the root directory and run the following command to set up the Solr environment
 
     ```bash
     docker compose up -d
