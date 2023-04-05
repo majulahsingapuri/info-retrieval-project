@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import {
-  TextField,
   IconButton,
   CircularProgress,
   List,
-  ListItem,
-  ListItemText,
-  Typography,
   Snackbar,
   Divider,
   FormControl,
@@ -21,7 +17,6 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
-  Fab
 } from '@material-ui/core';
 import {Autocomplete} from '@autocomplete/material-ui';
 import CloseIcon from '@material-ui/icons/Close';
@@ -30,6 +25,7 @@ import API, { ENDPOINT }  from "./components/API";
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Nav from './components/Navbar/Nav';
+import Post from './components/Post/Post';
 import { 
     Chart as ChartJS,
     ArcElement,
@@ -63,7 +59,7 @@ function App() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [start, setStart] = useState(0);
   const [maxRowNo, setMaxRowNo] = useState(0);
-  const [chart, setChart] = useState("");
+  const [chart, setChart] = useState({});
   const [votes, setVotes] = useState("");
   
   const [sortDirection, setSortDirection] = useState("desc");
@@ -101,7 +97,13 @@ function App() {
       setComments(data.response.docs);
       setSpeedQ(data.responseHeader.QTime);
       setMaxRowNo(data.response.numFound - 1);
-      setChart(data.stats.stats_fields.LABEL.sum);
+      setChart({
+        labels: ['positive','negative'],
+        datasets:[
+            {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
+            backgroundColor: ['green', 'red']}
+        ]
+      });
       setLoading(false);
     })
     .catch((error) => {
@@ -122,7 +124,13 @@ function App() {
       setComments(data.response.docs)
       setSpeedQ(data.responseHeader.QTime);
       setMaxRowNo(data.response.numFound - 1);
-      setChart(data.stats.stats_fields.LABEL.sum);
+      setChart({
+        labels: ['positive','negative'],
+        datasets:[
+            {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
+            backgroundColor: ['green', 'red']}
+        ]
+      });
       setLoading(false);
     })
     .catch((error) => {
@@ -144,7 +152,13 @@ function App() {
         setComments(data.response.docs);
         setSpeedQ(data.responseHeader.QTime);
         setMaxRowNo(data.response.numFound-1);
-        setChart(data.stats.stats_fields.LABEL.sum);
+        setChart({
+          labels: ['positive','negative'],
+          datasets:[
+              {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
+              backgroundColor: ['green', 'red']}
+          ]
+        });
         setLoading(false);
       })
       .catch((error) => {
@@ -169,7 +183,13 @@ function App() {
       // get total result found
       setMaxRowNo(data.response.numFound-1);
       // get Label sum
-      setChart(data.stats.stats_fields.LABEL.sum);
+      setChart({
+        labels: ['positive','negative'],
+        datasets:[
+            {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
+            backgroundColor: ['green', 'red']}
+        ]
+      });
       setLoading(false);
       
     })
@@ -261,46 +281,7 @@ function App() {
             <List className="transbox">
               {
                 comments.map((info_retrieval) =>
-                  <ListItem key={info_retrieval.id} alignItems="flex-start">
-                    <ListItemText
-                      primary={
-                        <React.Fragment>
-                          <div className='contentStyle'>
-                          </div>
-                            <table>
-                            <tr><th>Year</th><td>{info_retrieval.id}</td></tr>
-                              <tr><th>Year</th><td>{info_retrieval.YEAR}</td></tr>
-                              <tr><th>Text</th><td>{info_retrieval.TEXT}</td></tr>
-                              <tr><th>Manufacturer</th><td>{info_retrieval.MANUFACTURER}</td></tr>
-                              <tr><th>Model</th><td>{info_retrieval.MODEL}</td></tr>
-                              <tr><th>Label</th><td>{info_retrieval.LABEL}</td></tr>
-                              <tr><th>Votes</th><td>{info_retrieval.VOTES}</td></tr>
-                            </table>
-                        </React.Fragment>
-                      }
-                      secondary={
-                        <React.Fragment>
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            className="inline"
-                            color="textPrimary"
-                          >
-                            Comment by {info_retrieval.AUTHOR} on {new Date(info_retrieval.DATE).toLocaleDateString()}
-                          </Typography>
-                          <Fab variant="extended" label="Button" color="primary">
-                            <b>Useful</b>
-                          </Fab>
-                          <span style={{marginLeft: "20px"}}>
-                            <Fab variant="extended" label="Button" color="primary">
-                              <b>Not Useful</b>
-                            </Fab>
-                          </span>
-                        <div />
-                      </React.Fragment>
-                      }
-                    />
-                  </ListItem>
+                  <Post info_retrieval={info_retrieval} />
                 )
               }
             </List>   
@@ -326,7 +307,6 @@ function App() {
 
               <div>
               <div>
-                <p>Label sum : {chart}</p>
                 <div style = {
                     {
                     padding:'20px',
@@ -334,7 +314,7 @@ function App() {
                     }
                 } > 
                 <Pie 
-                    data={data}
+                    data={chart}
                     >
                     </Pie>
                 </div>
