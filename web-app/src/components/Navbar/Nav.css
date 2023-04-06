@@ -22,28 +22,28 @@
     height: 30px;
 }
 
-.car_logo{
-    
-}
-
 .car__navbar-links_container {
     display: flex;
     flex-direction: row;
 }
 
-.car__navbar-links_container p,
-.car__navbar-menu_container p {
-    color: #fff;
+.car__navbar-links_container p{
     font-family: var(--font-family);
     font-weight: 500;
-    font-size: 18px;
+    font-size: 25px;
     line-height: 25px;
     text-transform: capitalize;
 
     margin: 0 1rem;
     cursor: pointer;
+
+    background: var(--gradient-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
+/*
 .car__navbar-menu {
     margin-left: 1rem;
 
@@ -76,6 +76,7 @@
 .car__navbar-menu_container p {
     margin: 1rem 0;
 }
+*/
 
 @media screen and (max-width: 1050px) {
     .gpt3__navbar-links_container {

@@ -4,7 +4,7 @@ import {
     ListItem,
     ListItemText,
     Typography,
-    Fab
+    Divider
   } from '@material-ui/core';
 import API, { ENDPOINT }  from "../../Api/API";
 
@@ -47,38 +47,35 @@ const Post = ({info_retrieval, handleSearch}) => {
     return (
         <div class="card">
             <div class="container">
-            <ListItem key={info_retrieval.id} className='listStyle'>
-            <ListItemText className='listItemStyle'
-                primary={
-                    <React.Fragment>
-                        <div className='contentStyle'>
-                        </div>
-                        <table>
-                            <tr><th>Year</th><td>{info_retrieval.YEAR}</td></tr>
-                            <tr><th>Text</th><td>{info_retrieval.TEXT}</td></tr>
-                            <tr><th>Manufacturer</th><td>{info_retrieval.MANUFACTURER}</td></tr>
-                            <tr><th>Model</th><td>{info_retrieval.MODEL}</td></tr>
-                            <tr><th>Label</th><td>{displayWord(info_retrieval.LABEL)}</td></tr>
-                            <tr><th>Votes</th><td>{info_retrieval.VOTES}</td></tr>
-                        </table>
-                    </React.Fragment>
-                }
-                secondary={
-                    <React.Fragment>
-                        <Typography component="span" variant="body2" className="inline" color="textPrimary">
-                            Comment by {info_retrieval.AUTHOR} on {new Date(info_retrieval.DATE).toLocaleDateString()}
-                        </Typography>
-                        <p>
-                            <button className='usefulnessStyle1' label="Button" onClick={() => updateVote(1)}>Useful</button>
-                            <span className='usefulnessSpan'>
-                                <button className='usefulnessStyle2' label="Button" onClick={() => updateVote(-1)}>Not Useful</button>
-                            </span>
-                        </p>
-                        <div />
-                    </React.Fragment>
-                }
-            />
-        </ListItem>
+                <ListItem key={info_retrieval.id} className='listStyle'>
+                    <ListItemText className='listItemStyle'
+                        primary={
+                            <React.Fragment>
+                                <table>
+                                    <tr><th>Year</th><td>{info_retrieval.YEAR}</td></tr>
+                                    <tr><th>Comment</th><td>{info_retrieval.TEXT}</td></tr>
+                                    <tr><th>Manufacturer</th><td>{info_retrieval.MANUFACTURER}</td></tr>
+                                    <tr><th>Model</th><td>{info_retrieval.MODEL}</td></tr>
+                                    <tr><th>Label</th><td>{displayWord(info_retrieval.LABEL)}</td></tr>
+                                    <tr><th>Votes</th><td>{info_retrieval.VOTES}</td></tr>
+                                </table>
+                            </React.Fragment>
+                        }
+                        secondary={
+                            <React.Fragment>
+                                <Typography component="span" variant="body2" className="inline-left" color="textPrimary">
+                                    Comment by {info_retrieval.AUTHOR} on {new Date(info_retrieval.DATE).toLocaleDateString()}
+                                </Typography>
+                                <p>
+                                    <button className='usefulnessStyle1' label="Button" onClick={() => updateVote(1)}>Useful</button>
+                                    <span className='usefulnessSpan'>
+                                        <button className='usefulnessStyle2' label="Button" onClick={() => updateVote(-1)}>Not Useful</button>
+                                    </span>
+                                </p>
+                            </React.Fragment>
+                        }
+                    />
+                </ListItem>
             </div>
         </div>
     )

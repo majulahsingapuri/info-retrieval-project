@@ -25,7 +25,7 @@
 }
 
 body {
-  background: silver;
+  background: #ffffff;
 }
 
 a {
@@ -75,20 +75,12 @@ a {
 }
 
 .searchBarStyle_container{
-  /*
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: "60vw";
-  border: 2px solid;
-  padding: "10px";
-  border-color: #b68181;
-  */
-  width: 100%;
+  width: 60%;
   margin: 2rem 0 1rem;
-
   display: flex;
   flex-direction: row;
+  margin-top: 15px;
+  margin-left: 22%;
 }
 
 .searchBarStyle_container input {
@@ -109,7 +101,7 @@ a {
   border-bottom-left-radius: 5px;
 }
 
-.searchBarStyle_container button {
+.searchBtn {
   flex: 0.6;
   width: 30%;
   min-height: 50px;
@@ -123,30 +115,37 @@ a {
   color: #fff;
   cursor: pointer;
   outline: none;
-
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
 /* Title */
 .carReviewStyle{
-  width: "60vw";
   display: flex;
-  justify-content : space-between;
-  align-items: center;
-}
-
-.carReviewStyle h1 {
-background: var(--gradient-text);
-background-clip: text;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
 }
 
 .carReviewStyle_container{
-display: flex;
-align-items: center;
-justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 20px;
+}
+
+/* Query result speed */
+.resultStyle p {
+  opacity: 0.5;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 15px;
+  background-color: black;
+}
+
+/* Page */
+.pageStyle{
+  padding-top: 15px;
 }
 
 /* Loading */
@@ -161,11 +160,11 @@ justify-content: space-between;
 /* Pie Chart  */
 .PieStyle{
   position: fixed;
-  top: 55%;
+  top: 52%;
   right: 0%;
-  margin-right: 20px;
+  margin-right: 70px;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(217, 217, 217, 0.7);
   border-radius: 10px;
   width: 400px;
   height: 300px;

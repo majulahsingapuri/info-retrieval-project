@@ -32,7 +32,6 @@ import {
     Legend,
     Title
 } from 'chart.js'
-
 import { Pie } from 'react-chartjs-2';
 
 import data from "./data/cars_model_processed.json"
@@ -100,6 +99,8 @@ function App() {
   const [errorText, setErrorText] = React.useState('');
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
+  var model = "";
+
   // Tokenisation
   const getText = (str) => {
     return `TEXT:${str}`;
@@ -134,7 +135,7 @@ function App() {
     plugins: {
       legend: {
         display: true,
-        position: 'bottom'
+        position: 'bottom',
       },
       title: {
         display: true,
@@ -153,13 +154,10 @@ function App() {
   const createQuery = (baseQuery) => {
     if (sortDirection == "desc") {
       console.log(sortDirection);
-      console.log("this is the originial base query:", baseQuery);
       baseQuery = baseQuery + `&sort=VOTES`+`%20`+ `${sortDirection}`
-      console.log("this is the base query:", baseQuery);
     }
     if (sortDirection == "asc") {
       console.log(sortDirection);
-      console.log("this is the originial base query for asc:", baseQuery);
       baseQuery = baseQuery + `&sort=VOTES`+`%20`+ `${sortDirection}`
       console.log("this is the base query for asc:", baseQuery);
     }
@@ -167,7 +165,9 @@ function App() {
       baseQuery += `&fq=MANUFACTURER:${manufacturerFilter}`
     }
     if (yearFilter !== "All") {
+      console.log("this is the originial YEAR query for asc:", baseQuery);
       baseQuery += `&fq=YEAR:${yearFilter}`
+      console.log("this is the YEAR query for asc:", baseQuery);
     }
     if (modelFilter !== "All") {
       baseQuery += `&fq=MODEL:${modelFilter}`
@@ -180,7 +180,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(newStart);
       setComments(data.response.docs);
@@ -190,7 +190,7 @@ function App() {
         labels: ['positive','negative'],
         datasets:[
             {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-            backgroundColor: ['green', 'red']}
+            backgroundColor: ["#b91d47","#2b5797"]}
         ]
       });
       setLoading(false);
@@ -207,7 +207,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setComments(data.response.docs)
@@ -217,7 +217,7 @@ function App() {
         labels: ['positive','negative'],
         datasets:[
             {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-            backgroundColor: ['green', 'red']}
+            backgroundColor: ["#b91d47","#2b5797"]}
         ]
       });
       setLoading(false);
@@ -235,7 +235,7 @@ function App() {
       setLoading(true);
       let api = new API();
       api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
       .then((data) => {
         setStart(0);
         setComments(data.response.docs);
@@ -245,7 +245,7 @@ function App() {
           labels: ['positive','negative'],
           datasets:[
               {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-              backgroundColor: ['green', 'red']}
+              backgroundColor: ["#b91d47","#2b5797"]}
           ]
         });
         setLoading(false);
@@ -261,7 +261,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setCurrentSearchInput(searchInput);
@@ -276,11 +276,10 @@ function App() {
         labels: ['positive','negative'],
         datasets:[
             {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-            backgroundColor: ['green', 'red']}
+            backgroundColor: ["#b91d47","#2b5797"]}
         ]
       });
       setLoading(false);
-      
     })
     .catch((error) => {
       setError("Error found. Unable to search");
@@ -310,31 +309,36 @@ function App() {
                 setSearchInput(event.target.value);
               }}
             />
-            <button type="button" onClick={handleSearch}>Search</button>
+            <button type="button" className='searchBtn' onClick={handleSearch}>Search</button>
+            <div className='carReviewStyle'>
+              <div className='carReviewStyle_container'>
+                <FormControl variant="outlined" className="formControlStyle">
+                  <InputLabel>Rows</InputLabel>
+                  <Select
+                    value={rowsPerPage}
+                    onChange={changeRowsPage}
+                    label="Rows"
+                  >
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={20}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                </FormControl>
+                <IconButton onClick={() => {setDialogOpen(true)}}>
+                  <FilterListIcon />
+                </IconButton>
+              </div>
+            </div>
           </div>
         </div>
-        <div className='carReviewStyle'>
-          <h1>Car Review</h1>
-          <p>Search Query Speed : {speedQ}</p>
-          <div className='carReviewStyle_container'>
-            <FormControl variant="outlined" className="formControlStyle">
-              <InputLabel>Rows</InputLabel>
-              <Select
-                value={rowsPerPage}
-                onChange={changeRowsPage}
-                label="Rows"
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={20}>15</MenuItem>
-                <MenuItem value={20}>20</MenuItem>
-              </Select>
-            </FormControl>
-            <IconButton onClick={() => {setDialogOpen(true)}}>
-              <FilterListIcon />
-            </IconButton>
-          </div>
-        </div>
+        {
+          !(loading) && (comments.length > 0)&&(
+            <div className='resultStyle'>
+              <p>About {maxRowNo+1} results ({speedQ} milliseconds)</p>
+            </div>
+          )
+        }
         {
           (loading) ? (
             <div className='loadingStyle'>
@@ -347,7 +351,6 @@ function App() {
                   <Post key={info_retrieval.id} info_retrieval={info_retrieval} handleSearch={handleSearch} />                  
                 )
               }
-              
             </List>   
           )
         }
@@ -359,8 +362,8 @@ function App() {
         {
           !(loading) && (comments.length > 0) && (
             <div>
-              <h5>Displaying {start+1} to {start+rowsPerPage > maxRowNo ? maxRowNo+1 : start+rowsPerPage} of {maxRowNo+1} comments.</h5>
-              <div>
+              <div className='pageStyle'>
+                <h5>Displaying {start+1} to {start+rowsPerPage > maxRowNo ? maxRowNo+1 : start+rowsPerPage} of {maxRowNo+1} comments.</h5>
                 <IconButton onClick={() => {flipPage(start-rowsPerPage)}} disabled={start === 0 ? true : false} >
                   <ArrowBackIosIcon />
                 </IconButton>
@@ -415,21 +418,6 @@ function App() {
         <DialogContent dividers>
           <div />
           <FormControl variant="outlined" className="formControlStyle">
-            <FormLabel component="legend">Year</FormLabel>
-              <Select
-                value={yearFilter}
-                onChange={(event) => {setYearFilter(event.target.value)}}
-                label="Year"
-              >
-              {
-                yearList.map((YEAR) => 
-                  <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
-                )
-              }
-              </Select>
-          </FormControl>
-          <div />
-          <FormControl variant="outlined" className="formControlStyle">
             <FormLabel component="legend">Manufacturer</FormLabel>
               <Select
                 value={manufacturerFilter}
@@ -437,9 +425,11 @@ function App() {
                 label="Manufacturer"
               >
                 {
-                  carList.map((MANUFACTURER) => 
+                  Object.keys(data).map((MANUFACTURER) => 
                     <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
-                    
+                    //console.log("value", Object.keys(data)),
+                    //console.log("values", JSON.stringify(manufacturerFilter)),
+                    //console.log("valuesss", Object.keys(data))
                   )
                 }
               </Select>
@@ -455,9 +445,23 @@ function App() {
                 {
                   modelList.map((MODEL) => 
                     <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
-                    
                   )
                 }
+              </Select>
+          </FormControl>
+          <div />
+          <FormControl variant="outlined" className="formControlStyle">
+            <FormLabel component="legend">Year</FormLabel>
+              <Select
+                value={yearFilter}
+                onChange={(event) => {setYearFilter(event.target.value)}}
+                label="Year"
+              >
+              {
+                yearList.map((YEAR) => 
+                  <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
+                )
+              }
               </Select>
           </FormControl>
         </DialogContent>
@@ -467,12 +471,3 @@ function App() {
 }
 
 export default App;
-
-/*
-<RadioGroup value={yearFilter} onChange={(event) => {setYearFilter(event.target.value)}}>
-  <FormControlLabel value="All" control={<Radio />} label="All" />
-  <FormControlLabel value="2007" control={<Radio />} label="2007" />
-  <FormControlLabel value="2008" control={<Radio />} label="2008" />
-  <FormControlLabel value="2009" control={<Radio />} label="2009" />
-</RadioGroup>
-*/

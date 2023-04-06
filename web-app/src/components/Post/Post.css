@@ -4,7 +4,7 @@
 }
 
 .listItemStyle{
-  padding: 10px;
+  padding: 5px;
 }
 
 .contentStyle{
@@ -22,19 +22,27 @@ td,th{
   padding: 10px;
 }
 
+.inline {
+  display : inline;
+}
+
+p.textStyle{
+  border: 1px solid white;
+}
+
 /* Usefulness Button  */
 .usefulnessStyle1{
   font-size: 16px;
-  padding: 10px 24px;
-  border-radius: 10%;
-  background-color: gray;
-  color: white;
-  margin-left: 30px;
+  padding: 10px 35px;
+  border-radius: 50%;
+  background-color: white;
+  color: #042c54;
+  margin-top: 10px;
 }
 
 .usefulnessStyle1:hover {
-  background-color: white; /* Green */
-  color: grey;
+  background-color: #042c54;
+  color: white;
 }
 
 .usefulnessSpan{
@@ -43,23 +51,26 @@ td,th{
 
 .usefulnessStyle2{
   font-size: 16px;
-  padding: 10px 24px;
-  border-radius: 10%;
-  background-color: gray;
-  color: white;
+  padding: 10px 25px;
+  border-radius: 50%;
+  background-color: white;
+  color: #042c54;
 }
 
 .usefulnessStyle2:hover {
-  background-color: white; /* Green */
-  color: grey;
+  background-color: #042c54;
+  color: white;
 }
 
 /* Dataset Card */
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px 0 rgba(85, 85, 85, 0.2);
   transition: 0.3s;
   border-radius: 5px;
-  width: 70%;
+  width: 60%;
+  margin-left: 40px;
+  margin-top: 20px;
+  background-color: darkgray;
 }
 
 .card:hover {
