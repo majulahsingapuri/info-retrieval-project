@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import {
   IconButton,
@@ -34,6 +34,8 @@ import {
 } from 'chart.js'
 
 import { Pie } from 'react-chartjs-2';
+
+import data from "./data/cars_model_processed.json"
 
 ChartJS.register(
     ArcElement,
