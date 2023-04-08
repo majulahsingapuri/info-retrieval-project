@@ -3,14 +3,13 @@ import './Post.css';
 import {
     ListItem,
     ListItemText,
-    Typography,
-    Divider
+    Typography
   } from '@material-ui/core';
 import API, { ENDPOINT }  from "../../Api/API";
 
 const Post = ({info_retrieval, handleSearch}) => {
     const [post, setPost] = useState(info_retrieval);
-    
+
     const updateVote = (num) => {
         const updateVotingsData = {
             "DATE": [info_retrieval.DATE],
@@ -20,7 +19,7 @@ const Post = ({info_retrieval, handleSearch}) => {
             "MANUFACTURER":[info_retrieval.MANUFACTURER],
             "MODEL":[info_retrieval.MODEL],
             "LABEL":[info_retrieval.LABEL],
-            "VOTES":[info_retrieval.votes+num],
+            "VOTES":[info_retrieval.VOTES] + num,
             "id": info_retrieval.id
         }
 
@@ -30,7 +29,8 @@ const Post = ({info_retrieval, handleSearch}) => {
         .then((data) => {
             console.log("data: ", data);
             setPost(updateVotingsData);
-            handleSearch()
+            console.log("hello", updateVotingsData);
+            handleSearch();
         });
     }
 

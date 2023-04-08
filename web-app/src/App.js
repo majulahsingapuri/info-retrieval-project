@@ -33,7 +33,6 @@ import {
     Title
 } from 'chart.js'
 import { Pie } from 'react-chartjs-2';
-
 import data from "./data/cars_model_processed.json"
 
 ChartJS.register(
@@ -52,33 +51,6 @@ const yearList = [
   "2020", "2021", "2022", "2023"
 ];
 
-const carList = [
-  "All",
-  "mercedes-benz",
-  "lexus",
-  "honda",
-  "nissan",
-  "volkswagen",
-  "volvo",
-  "mazda",
-  "bmw",
-  "audi"
-];
-
-const modelList = [
-  "All", "gl-class",  "rx 350",  "cr-v",  "sentra",  "passat",  "maxima",
-  "new beetle",  "rogue",  "civic",  "frontier",  "c-class",  "versa",
-  "jetta",  "s80",  "is 250",  "fit",  "r32",  "tribute",  "altima",
-  "xterra",  "clk-class",  "ridgeline",  "e-class",  "v50",  "c70",
-  "mx-5 miata",  "3 series",  "350z",  "slk-class",  "xc70",  "s8",  "x5",
-  "5 series",  "rabbit",  "s-class",  "a5",  "element",  "x3",  "mazdaspeed mazda6",
-  "mazda3",  "altima hybrid",  "c30",  "cx-7",  "gs 350",  "q7",  "pathfinder",  "quest",
-  "m-class",  "a3",  "ls 460",  "1 series",  "titan",  "pilot",  "gti",  "6 series",  "cx-9",
-  "tt",  "mazda5",  "odyssey",  "7 series",  "eos",  "mazda6 gli",  "a4",  "s40",  "a8",  "rs4",
-  "a6",  "xc90",  "armada",  "cls-class",  "gs 450h",  "m3",  "is 350",  "is f",  "es 350",
-  "r-class",  "sl-class",  "rx 400h",  "x6",  "v70"
-]
-
 function App() {
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -89,7 +61,7 @@ function App() {
   const [start, setStart] = useState(0);
   const [maxRowNo, setMaxRowNo] = useState(0);
   const [chart, setChart] = useState({});
-  
+
   const [sortDirection, setSortDirection] = useState("desc");
   const [manufacturerFilter, setManufacturerFilter] = useState("All");
   const [yearFilter, setYearFilter] = useState("All");
@@ -98,8 +70,6 @@ function App() {
   const [errorBarOpen, setErrorBarOpen] = React.useState(false);
   const [errorText, setErrorText] = React.useState('');
   const [dialogOpen, setDialogOpen] = React.useState(false);
-
-  var model = "";
 
   // Tokenisation
   const getText = (str) => {
@@ -151,28 +121,25 @@ function App() {
   };
 
   // Filter Query
-  const createQuery = (baseQuery) => {
+  const createQuery = (baseQ) => {
     if (sortDirection == "desc") {
       console.log(sortDirection);
-      baseQuery = baseQuery + `&sort=VOTES`+`%20`+ `${sortDirection}`
+      baseQ = baseQ + `&sort=VOTES`+`%20`+ `${sortDirection}`
     }
     if (sortDirection == "asc") {
       console.log(sortDirection);
-      baseQuery = baseQuery + `&sort=VOTES`+`%20`+ `${sortDirection}`
-      console.log("this is the base query for asc:", baseQuery);
+      baseQ = baseQ + `&sort=VOTES`+`%20`+ `${sortDirection}`
     }
-    if (manufacturerFilter !== "All") {
-      baseQuery += `&fq=MANUFACTURER:${manufacturerFilter}`
+    if (manufacturerFilter !== " ") {
+      baseQ += `&fq=MANUFACTURER:${manufacturerFilter}`
     }
     if (yearFilter !== "All") {
-      console.log("this is the originial YEAR query for asc:", baseQuery);
-      baseQuery += `&fq=YEAR:${yearFilter}`
-      console.log("this is the YEAR query for asc:", baseQuery);
+      baseQ += `&fq=YEAR:${yearFilter}`
     }
-    if (modelFilter !== "All") {
-      baseQuery += `&fq=MODEL:${modelFilter}`
+    if (modelFilter !== " ") {
+      baseQ += `&fq=MODEL:${modelFilter}`
     }
-    return baseQuery
+    return baseQ
   }
 
   // Flip Page
@@ -196,7 +163,7 @@ function App() {
       setLoading(false);
     })
     .catch((error) => {
-      setError("Something went wrong 1")
+      setError("Error found. Unable to flip page")
       setLoading(false);
     })
   }
@@ -210,8 +177,11 @@ function App() {
     .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
+      // get all json data
       setComments(data.response.docs)
+      // get query speed
       setSpeedQ(data.responseHeader.QTime);
+      // get the total search result
       setMaxRowNo(data.response.numFound - 1);
       setChart({
         labels: ['positive','negative'],
@@ -223,7 +193,7 @@ function App() {
       setLoading(false);
     })
     .catch((error) => {
-      setError("Error found. Flip page error")
+      setError("Error found. Unable to change row per page")
       setRowsPerPage(preRowPage);
       setLoading(false);
     })
@@ -251,7 +221,7 @@ function App() {
         setLoading(false);
       })
       .catch((error) => {
-        setError("Something went wrong 3");
+        setError("Error filtering");
         setLoading(false);
       })
     }
@@ -261,6 +231,8 @@ function App() {
     setLoading(true);
     let api = new API();
     api
+    // 1. Get the query path - Solr
+    // 2. Add stats Label to sum for the sentimental result
     .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
@@ -269,9 +241,9 @@ function App() {
       setSpeedQ(data.responseHeader.QTime);
       // get all json data
       setComments(data.response.docs);
-      // get total result found
+      // get the total search result
       setMaxRowNo(data.response.numFound-1);
-      // get Label sum
+      // diplay Pie chart data
       setChart({
         labels: ['positive','negative'],
         datasets:[
@@ -421,16 +393,14 @@ function App() {
             <FormLabel component="legend">Manufacturer</FormLabel>
               <Select
                 value={manufacturerFilter}
+                defaultValue={'All'}
                 onChange={(event) => {setManufacturerFilter(event.target.value)}}
                 label="Manufacturer"
               >
                 {
                   Object.keys(data).map((MANUFACTURER) => 
-                    <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
-                    //console.log("value", Object.keys(data)),
-                    //console.log("values", JSON.stringify(manufacturerFilter)),
-                    //console.log("valuesss", Object.keys(data))
-                  )
+                  <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
+                )
                 }
               </Select>
           </FormControl>
@@ -443,8 +413,10 @@ function App() {
                 label="Manufacturer"
               >
                 {
-                  modelList.map((MODEL) => 
-                    <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
+                  Object.keys(data[manufacturerFilter] || {}).map((MODEL) => 
+                    {
+                      return <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
+                    }
                   )
                 }
               </Select>

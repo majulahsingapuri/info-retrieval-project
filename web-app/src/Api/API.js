@@ -1,7 +1,13 @@
 import axios from 'axios';
 
 // Solr Server IP Address
-export const ENDPOINT = 'http://127.0.0.1:8983';
+export const ENDPOINT = 'http://localhost:8983';
+
+const headers = {
+  'Content-Type': 'application/json',
+  'Authorization': 'JWT fefege...',
+  'Access-Control-Allow-Origin' : '*'
+}
 
 export default class API {
   get(path) {
@@ -19,7 +25,9 @@ export default class API {
   post(path, data) {
     return new Promise((resolve, reject) => {
       axios
-        .post(path, data)
+        .post(path, data , {
+          headers: headers
+        })
         .then((response) => {
           resolve(response.data);
         })
