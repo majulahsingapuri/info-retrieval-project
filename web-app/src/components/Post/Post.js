@@ -19,7 +19,7 @@ const Post = ({info_retrieval, handleSearch}) => {
             "MANUFACTURER":[info_retrieval.MANUFACTURER],
             "MODEL":[info_retrieval.MODEL],
             "LABEL":[info_retrieval.LABEL],
-            "VOTES":[info_retrieval.VOTES] + num,
+            "VOTES":[parseInt(info_retrieval.VOTES)+num],
             "id": info_retrieval.id
         }
 

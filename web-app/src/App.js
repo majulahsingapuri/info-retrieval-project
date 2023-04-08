@@ -42,15 +42,6 @@ ChartJS.register(
     Title
 )
 
-const yearList = [
-  "All",
-  "2000", "2001", "2002", "2003", "2004",
-  "2005", "2006", "2007", "2008", "2009",
-  "2010", "2011", "2012", "2013", "2014",
-  "2015", "2016", "2017", "2018", "2019",
-  "2020", "2021", "2022", "2023"
-];
-
 function App() {
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -130,13 +121,13 @@ function App() {
       console.log(sortDirection);
       baseQ = baseQ + `&sort=VOTES`+`%20`+ `${sortDirection}`
     }
-    if (manufacturerFilter !== " ") {
+    if (manufacturerFilter !== "All") {
       baseQ += `&fq=MANUFACTURER:${manufacturerFilter}`
     }
     if (yearFilter !== "All") {
       baseQ += `&fq=YEAR:${yearFilter}`
     }
-    if (modelFilter !== " ") {
+    if (modelFilter !== "All") {
       baseQ += `&fq=MODEL:${modelFilter}`
     }
     return baseQ
@@ -147,7 +138,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(newStart);
       setComments(data.response.docs);
@@ -174,7 +165,7 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       // get all json data
@@ -205,8 +196,15 @@ function App() {
       setLoading(true);
       let api = new API();
       api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
       .then((data) => {
+        if(data.response.docs === [] && manufacturerFilter !== "All" && modelFilter !== "All" && yearFilter !== "All"){
+          api.post('/localhost:5000', {
+            manufacturer : manufacturerFilter ,
+            model: modelFilter,
+            year: yearFilter,
+          })
+        }
         setStart(0);
         setComments(data.response.docs);
         setSpeedQ(data.responseHeader.QTime);
@@ -233,7 +231,7 @@ function App() {
     api
     // 1. Get the query path - Solr
     // 2. Add stats Label to sum for the sentimental result
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
     .then((data) => {
       setStart(0);
       setCurrentSearchInput(searchInput);
@@ -413,7 +411,8 @@ function App() {
                 label="Manufacturer"
               >
                 {
-                  Object.keys(data[manufacturerFilter] || {}).map((MODEL) => 
+                  manufacturerFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> : 
+                  ["All"].concat(Object.keys(data[manufacturerFilter])).map((MODEL) => 
                     {
                       return <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
                     }
@@ -430,7 +429,8 @@ function App() {
                 label="Year"
               >
               {
-                yearList.map((YEAR) => 
+                modelFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> : 
+                ["All"].concat(data[manufacturerFilter][modelFilter]).map((YEAR) => 
                   <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
                 )
               }
