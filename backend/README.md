@@ -19,7 +19,7 @@ This is a simple Flask server that gets a post request from the frontend and scr
 
 ## Usage
 
-1. Send a `POST` request to `http://127.0.0.1/5000` with the following parameters
+1. Send a `POST` request to `http://localhost/api/` if using Docker or `http://localhost:5000/` if running in terminal with the following parameters
 
     ```json
     {
@@ -38,3 +38,10 @@ This is a simple Flask server that gets a post request from the frontend and scr
     ```
 
     Then the data has been successfully added to the solr database and can be fetched.
+
+## Explanation of Files
+
+> - model: The model files that will be loaded by the app to do sentiment analysis.
+> - app.py: The main Flask App.
+> - config.py: Loads the environment variables.
+> - crawler.py: Hosts the code that scrapes [cars.com](https://cars.com/research/)

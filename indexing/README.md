@@ -29,6 +29,12 @@
 
 Below is a list of the key querying tools that you will need to execute queries in the database.
 
-> q: (Query) The text that you want to search for in the dataset. e.g. `TEXT:*mini cooper*`.
-> fq: (Filter Query) Additional filters on the existing query. e.g. `YEAR:2021`.
-> fl: (Fields List): Comma separated list of fields that should be returned in the result. e.g. `YEAR,MODEL`.
+> - q: (Query) The text that you want to search for in the dataset. e.g. `TEXT:*mini cooper*`.
+> - fq: (Filter Query) Additional filters on the existing query. e.g. `YEAR:2021`.
+> - fl: (Fields List): Comma separated list of fields that should be returned in the result. e.g. `YEAR,MODEL`.
+
+## Explanation of Files
+
+> - Dataset: The raw dataset downloaded from [this source](https://archive.ics.uci.edu/ml/datasets/opinrank+review+dataset).
+> - data_extractor.ipynb: Extracts the data from the above and converts it to csv files so its easier to use for model training and loading into Solr.
+> - output.csv: The processed data from the above notebook.
