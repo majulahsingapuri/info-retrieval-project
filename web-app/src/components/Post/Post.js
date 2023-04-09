@@ -7,20 +7,20 @@ import {
 } from '@material-ui/core';
 import API, { ENDPOINT } from "../../Api/API";
 
-const Post = ({ info_retrieval, handleSearch }) => {
-    const [post, setPost] = useState(info_retrieval);
+const Post = ({ review, handleSearch }) => {
+    const [post, setPost] = useState(review);
 
     const updateVote = (num) => {
         const updateVotingsData = {
-            "DATE": [info_retrieval.DATE],
-            "AUTHOR": [info_retrieval.AUTHOR],
-            "TEXT": [info_retrieval.TEXT],
-            "YEAR": [info_retrieval.YEAR],
-            "MANUFACTURER": [info_retrieval.MANUFACTURER],
-            "MODEL": [info_retrieval.MODEL],
-            "LABEL": [info_retrieval.LABEL],
-            "VOTES": [parseInt(info_retrieval.VOTES) + num],
-            "id": info_retrieval.id
+            "DATE": [review.DATE],
+            "AUTHOR": [review.AUTHOR],
+            "TEXT": [review.TEXT],
+            "YEAR": [review.YEAR],
+            "MANUFACTURER": [review.MANUFACTURER],
+            "MODEL": [review.MODEL],
+            "LABEL": [review.LABEL],
+            "VOTES": [parseInt(review.VOTES) + num],
+            "id": review.id
         }
 
         let api = new API();

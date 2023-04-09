@@ -11,6 +11,18 @@ services:
       - solr
     hostname: backend
 
+  web:
+    build: ./web-app
+    ports:
+      - 3000:3000
+    container_name: web
+    depends_on:
+      - solr
+      - backend
+    networks:
+      - solr
+    hostname: web
+
   caddy:
     build: ./caddy
     ports:
@@ -18,6 +30,7 @@ services:
     container_name: caddy
     depends_on:
       - backend
+      - web
     networks:
       - solr
     hostname: caddy
