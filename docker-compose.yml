@@ -1,69 +1,62 @@
 version: '3.7'
 services:
-  solr1:
-    image: solr:9.0
-    container_name: solr1
+  backend:
+    build: ./backend
+    container_name: backend
+    depends_on:
+      - solr
+    networks:
+      - solr
+    hostname: backend
+
+  web:
+    build: ./web-app
+    container_name: web
+    depends_on:
+      - solr
+      - backend
+    networks:
+      - solr
+    hostname: web
+
+  caddy:
+    build: ./caddy
     ports:
-     - "8983:8983"
+      - 80:80
+    container_name: caddy
+    depends_on:
+      - backend
+      - web
+    networks:
+      - solr
+    hostname: caddy
+
+  solr:
+    image: solr:9.0
+    container_name: solr
     environment:
-      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+      - ZK_HOST=zoo:2181,zoo2:2181,zoo3:2181
     networks:
       - solr
     depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
+      - zoo
     volumes:
       - solr_volume:/var/solr
+    hostname: solr
 
-  zoo1:
+  zoo:
     image: zookeeper:3.8
-    container_name: zoo1
+    container_name: zoo
     restart: always
-    hostname: zoo1
-    ports:
-      - 2181:2181
-      - 7001:7000
+    hostname: zoo
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      ZOO_SERVERS: server.1=zoo:2888:3888;2181 
       ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
       ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
     networks:
       - solr
   
-  zoo2:
-    image: zookeeper:3.8
-    container_name: zoo2
-    restart: always
-    hostname: zoo2
-    ports:
-      - 2182:2181
-      - 7002:7000
-    environment:
-      ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
-      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
-      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
-    networks:
-      - solr
-  
-  zoo3:
-    image: zookeeper:3.8
-    container_name: zoo3
-    restart: always
-    hostname: zoo3
-    ports:
-      - 2183:2181
-      - 7003:7000
-    environment:
-      ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
-      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
-      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
-    networks:
-      - solr
-
 networks:
   solr:
 

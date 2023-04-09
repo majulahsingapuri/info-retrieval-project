@@ -12,3 +12,7 @@ node_modules/
 # Ignore the TFEEvents Directory
 test_trainer/
 __pycache__/
+
+# Ignore env files
+.env
+.flaskenv

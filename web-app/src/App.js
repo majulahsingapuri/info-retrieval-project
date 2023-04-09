@@ -46,8 +46,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [speedQ, setSpeedQ] = useState("");
-  const [currentSearchInput, setCurrentSearchInput] = useState("");
-  const [comments, setComments] = useState([]);
+  const [cache, setCache] = useState(true);
+  const [reviews, setReviews] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [start, setStart] = useState(0);
   const [maxRowNo, setMaxRowNo] = useState(0);
@@ -61,6 +61,8 @@ function App() {
   const [errorBarOpen, setErrorBarOpen] = React.useState(false);
   const [errorText, setErrorText] = React.useState('');
   const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  const api = new API()
 
   // Tokenisation
   const getText = (str) => {
@@ -128,19 +130,19 @@ function App() {
     if (modelFilter !== "All") {
       baseQ += `&fq=MODEL:${modelFilter}`
     }
+    if (!cache) {
+      baseQ += `&cache=false`
+    }
     return baseQ
   }
 
-  // Flip Page
-  const flipPage = (newStart) => {
+  const search = () => {
     setLoading(true);
-    let api = new API();
-    api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
+    return api
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${start}&stats=true&stats.field=LABEL`))
       .then((data) => {
-        setStart(newStart);
-        setComments(data.response.docs);
         setSpeedQ(data.responseHeader.QTime);
+        setReviews(data.response.docs);
         setMaxRowNo(data.response.numFound - 1);
         setChart({
           labels: ['positive', 'negative'],
@@ -152,8 +154,14 @@ function App() {
           ]
         });
         setLoading(false);
+        return data
       })
-      .catch((error) => {
+  }
+
+  // Flip Page
+  const flipPage = (newStart) => {
+    setStart(newStart);
+    search().catch((error) => {
         setError("Error found. Unable to flip page")
         setLoading(false);
       })
@@ -162,30 +170,7 @@ function App() {
   const changeRowsPage = (event) => {
     var preRowPage = rowsPerPage
     setRowsPerPage(event.target.value)
-    setLoading(true);
-    let api = new API();
-    api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
-      .then((data) => {
-        setStart(0);
-        // get all json data
-        setComments(data.response.docs)
-        // get query speed
-        setSpeedQ(data.responseHeader.QTime);
-        // get the total search result
-        setMaxRowNo(data.response.numFound - 1);
-        setChart({
-          labels: ['positive', 'negative'],
-          datasets: [
-            {
-              data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
-              backgroundColor: ["#b91d47", "#2b5797"]
-            }
-          ]
-        });
-        setLoading(false);
-      })
-      .catch((error) => {
+    search().catch((error) => {
         setError("Error found. Unable to change row per page")
         setRowsPerPage(preRowPage);
         setLoading(false);
@@ -194,70 +179,32 @@ function App() {
 
   const handleClose = () => {
     setDialogOpen(false);
-    if (comments.length > 0) {
-      setLoading(true);
-      let api = new API();
-      api
-        .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
-        .then((data) => {
-          if (data.response.docs === [] && manufacturerFilter !== "All" && modelFilter !== "All" && yearFilter !== "All") {
-            api.post('/localhost:5000', {
-              manufacturer: manufacturerFilter,
-              model: modelFilter,
-              year: yearFilter,
+    setStart(0)
+    search().then((searchData) => {
+      if (!searchData.response.docs.length && manufacturerFilter !== "All" && modelFilter !== "All" && yearFilter !== "All") {
+        setLoading(true)
+        setCache(false)
+        api.post(`${ENDPOINT}/api/`, {
+          manufacturer: manufacturerFilter,
+          model: modelFilter,
+          year: yearFilter,
+        }).then((postData) => {
+          setTimeout(() => {
+            search().then((reloadData) => {
+              setCache(true)
             })
-          }
-          setStart(0);
-          setComments(data.response.docs);
-          setSpeedQ(data.responseHeader.QTime);
-          setMaxRowNo(data.response.numFound - 1);
-          setChart({
-            labels: ['positive', 'negative'],
-            datasets: [
-              {
-                data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
-                backgroundColor: ["#b91d47", "#2b5797"]
-              }
-            ]
-          });
-          setLoading(false);
+          }, 1000)
         })
-        .catch((error) => {
-          setError("Error filtering");
-          setLoading(false);
-        })
-    }
+      }
+    }).catch((error) => {
+        setError("Error filtering");
+        setLoading(false);
+      })
   }
 
   const handleSearch = () => {
-    setLoading(true);
-    let api = new API();
-    api
-      // 1. Get the query path - Solr
-      // 2. Add stats Label to sum for the sentimental result
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
-      .then((data) => {
-        setStart(0);
-        setCurrentSearchInput(searchInput);
-        // get query speed
-        setSpeedQ(data.responseHeader.QTime);
-        // get all json data
-        setComments(data.response.docs);
-        // get the total search result
-        setMaxRowNo(data.response.numFound - 1);
-        // diplay Pie chart data
-        setChart({
-          labels: ['positive', 'negative'],
-          datasets: [
-            {
-              data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
-              backgroundColor: ["#b91d47", "#2b5797"]
-            }
-          ]
-        });
-        setLoading(false);
-      })
-      .catch((error) => {
+    setStart(0)
+    search().catch((error) => {
         setError("Error found. Unable to search");
         setLoading(false);
       })
@@ -309,7 +256,7 @@ function App() {
           </div>
         </div>
         {
-          !(loading) && (comments.length > 0) && (
+          !(loading) && (reviews.length > 0) && (
             <div className='resultStyle'>
               <p>About {maxRowNo + 1} results ({speedQ} milliseconds)</p>
             </div>
@@ -323,8 +270,8 @@ function App() {
           ) : (
             <List className="transbox">
               {
-                comments.map((info_retrieval) =>
-                  <Post key={info_retrieval.id} info_retrieval={info_retrieval} handleSearch={handleSearch} />
+                reviews.map((review) =>
+                  <Post key={review.id} review={review} />
                 )
               }
             </List>
@@ -336,10 +283,10 @@ function App() {
           )
         }
         {
-          !(loading) && (comments.length > 0) && (
+          !(loading) && (reviews.length > 0) && (
             <div>
               <div className='pageStyle'>
-                <h5>Displaying {start + 1} to {start + rowsPerPage > maxRowNo ? maxRowNo + 1 : start + rowsPerPage} of {maxRowNo + 1} comments.</h5>
+                <h5>Displaying {start + 1} to {start + rowsPerPage > maxRowNo ? maxRowNo + 1 : start + rowsPerPage} of {maxRowNo + 1} reviews.</h5>
                 <IconButton onClick={() => { flipPage(start - rowsPerPage) }} disabled={start === 0 ? true : false} >
                   <ArrowBackIosIcon />
                 </IconButton>
@@ -402,8 +349,8 @@ function App() {
               label="Manufacturer"
             >
               {
-                Object.keys(data).map((MANUFACTURER) =>
-                  <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
+                ["All"].concat(Object.keys(data)).map((MANUFACTURER) =>
+                  <MenuItem key={MANUFACTURER} value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
                 )
               }
             </Select>
@@ -419,7 +366,7 @@ function App() {
               {
                 manufacturerFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> :
                   ["All"].concat(Object.keys(data[manufacturerFilter])).map((MODEL) => {
-                    return <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
+                    return <MenuItem key={MODEL} value={`${MODEL}`}>{MODEL}</MenuItem>
                   }
                   )
               }
@@ -436,7 +383,7 @@ function App() {
               {
                 modelFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> :
                   ["All"].concat(data[manufacturerFilter][modelFilter]).map((YEAR) =>
-                    <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
+                    <MenuItem key={YEAR} value={`${YEAR}`}>{YEAR}</MenuItem>
                   )
               }
             </Select>
