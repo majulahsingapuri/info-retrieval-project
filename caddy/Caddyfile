@@ -1,0 +1,7 @@
+:80
+
+handle_path /api/* {
+    reverse_proxy backend:5000
+}
+reverse_proxy /solr/* solr:8983
+

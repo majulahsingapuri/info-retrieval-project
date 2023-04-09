@@ -11,6 +11,17 @@ services:
       - solr
     hostname: backend
 
+  caddy:
+    build: ./caddy
+    ports:
+      - 80:80
+    container_name: caddy
+    depends_on:
+      - backend
+    networks:
+      - solr
+    hostname: caddy
+
   solr:
     image: solr:9.0
     container_name: solr
