@@ -1,0 +1,172 @@
+.Head {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+}
+
+a {
+  color: unset;
+  text-decoration: none;
+}
+
+.gradient__bg {
+  background:-moz-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, rgba(4, 12, 24, 1) 25%);
+
+  /* safari 5.1+,chrome 10+ */
+  background:-webkit-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, rgba(4, 12, 24, 1) 25%);
+
+  /* opera 11.10+ */
+  background:-o-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, rgba(4, 12, 24, 1) 25%);
+
+  /* ie 10+ */
+  background:-ms-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, rgba(4, 12, 24, 1) 25%);
+
+  /* global 92%+ browsers support */
+  background:radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, rgba(4, 12, 24, 1) 25%);
+}
+
+.formControlStyle {
+  margin: 1;
+  min-Width: 120;
+}
+
+.root {
+  width: '40vw';
+  background-color: #ffffff;
+}
+
+.inline {
+  display : inline;
+}
+
+/* Search Bar Styling*/
+.searchBarStyle{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+
+  margin-right: 5rem;
+}
+
+.searchBarStyle_container{
+  width: 60%;
+  margin: 2rem 0 1rem;
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+  margin-left: 22%;
+}
+
+.searchBarStyle_container input {
+  flex: 2;
+  width: 100%;
+  min-height: 50px;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  background: var(--color-footer);
+  border: 2px solid var(--color-footer);
+  padding: 0 1rem;
+  outline: none;
+  color: #fff;
+
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.searchBtn {
+  flex: 0.6;
+  width: 30%;
+  min-height: 50px;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  background: #FF4820;
+  border: 2px solid #FF4820;
+  padding: 0 1rem;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* Title */
+.carReviewStyle{
+  display: flex;
+}
+
+.carReviewStyle_container{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 20px;
+}
+
+/* Query result speed */
+.resultStyle p {
+  opacity: 0.5;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 15px;
+  background-color: black;
+}
+
+/* Page */
+.pageStyle{
+  padding-top: 15px;
+}
+
+/* Loading */
+.loadingStyle{
+  width: "100%"; 
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+/* Pie Chart  */
+.PieStyle{
+  position: fixed;
+  top: 52%;
+  right: 0%;
+  margin-right: 70px;
+  transform: translateY(-50%);
+  background-color: rgba(217, 217, 217, 0.7);
+  border-radius: 10px;
+  width: 400px;
+  height: 300px;
+  padding: 20px;
+}
