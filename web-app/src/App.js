@@ -20,26 +20,26 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import API, { ENDPOINT }  from "./Api/API";
+import API, { ENDPOINT } from "./Api/API";
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Nav from './components/Navbar/Nav';
 import Post from './components/Post/Post';
-import { 
-    Chart as ChartJS,
-    ArcElement,
-    Tooltip,
-    Legend,
-    Title
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title
 } from 'chart.js'
 import { Pie } from 'react-chartjs-2';
 import data from "./data/cars_model_processed.json"
 
 ChartJS.register(
-    ArcElement,
-    Tooltip,
-    Legend,
-    Title
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title
 )
 
 function App() {
@@ -66,29 +66,29 @@ function App() {
   const getText = (str) => {
     return `TEXT:${str}`;
   }
-  
+
   const tokenizeSentence = (input) => {
     // Split the input string into an array of words using space as the delimiter
     let words = input.split(" ");
-    
+
     // Create a new array to store the tokens
     let tokens = [];
-    
+
     // Iterate over the words and add them to the tokens array
     for (let i = 0; i < words.length; i++) {
       // Remove any leading or trailing punctuation from the word
       let token = words[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
-      
+
       // Add the token to the array if it's not empty
       if (token !== '') {
         tokens.push(`${getText(token)}`);
       }
     }
-    
+
     // Join the array of tokens with a line break (\n) and return as a single string
     return tokens.join(" \\n ");
   }
-  
+
   // Pie Chat
   const options = {
     maintainAspectRatio: false,
@@ -113,13 +113,11 @@ function App() {
 
   // Filter Query
   const createQuery = (baseQ) => {
-    if (sortDirection == "desc") {
-      console.log(sortDirection);
-      baseQ = baseQ + `&sort=VOTES`+`%20`+ `${sortDirection}`
+    if (sortDirection === "desc") {
+      baseQ = baseQ + `&sort=VOTES%20${sortDirection}`
     }
-    if (sortDirection == "asc") {
-      console.log(sortDirection);
-      baseQ = baseQ + `&sort=VOTES`+`%20`+ `${sortDirection}`
+    if (sortDirection === "asc") {
+      baseQ = baseQ + `&sort=VOTES%20${sortDirection}`
     }
     if (manufacturerFilter !== "All") {
       baseQ += `&fq=MANUFACTURER:${manufacturerFilter}`
@@ -138,25 +136,27 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
-    .then((data) => {
-      setStart(newStart);
-      setComments(data.response.docs);
-      setSpeedQ(data.responseHeader.QTime);
-      setMaxRowNo(data.response.numFound - 1);
-      setChart({
-        labels: ['positive','negative'],
-        datasets:[
-            {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-            backgroundColor: ["#b91d47","#2b5797"]}
-        ]
-      });
-      setLoading(false);
-    })
-    .catch((error) => {
-      setError("Error found. Unable to flip page")
-      setLoading(false);
-    })
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?indent=true&q.op=OR&q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=${newStart}&stats=true&stats.field=LABEL`))
+      .then((data) => {
+        setStart(newStart);
+        setComments(data.response.docs);
+        setSpeedQ(data.responseHeader.QTime);
+        setMaxRowNo(data.response.numFound - 1);
+        setChart({
+          labels: ['positive', 'negative'],
+          datasets: [
+            {
+              data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
+              backgroundColor: ["#b91d47", "#2b5797"]
+            }
+          ]
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError("Error found. Unable to flip page")
+        setLoading(false);
+      })
   }
 
   const changeRowsPage = (event) => {
@@ -165,29 +165,31 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
-    .then((data) => {
-      setStart(0);
-      // get all json data
-      setComments(data.response.docs)
-      // get query speed
-      setSpeedQ(data.responseHeader.QTime);
-      // get the total search result
-      setMaxRowNo(data.response.numFound - 1);
-      setChart({
-        labels: ['positive','negative'],
-        datasets:[
-            {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-            backgroundColor: ["#b91d47","#2b5797"]}
-        ]
-      });
-      setLoading(false);
-    })
-    .catch((error) => {
-      setError("Error found. Unable to change row per page")
-      setRowsPerPage(preRowPage);
-      setLoading(false);
-    })
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${event.target.value}&start=0&stats=true&stats.field=LABEL`))
+      .then((data) => {
+        setStart(0);
+        // get all json data
+        setComments(data.response.docs)
+        // get query speed
+        setSpeedQ(data.responseHeader.QTime);
+        // get the total search result
+        setMaxRowNo(data.response.numFound - 1);
+        setChart({
+          labels: ['positive', 'negative'],
+          datasets: [
+            {
+              data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
+              backgroundColor: ["#b91d47", "#2b5797"]
+            }
+          ]
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError("Error found. Unable to change row per page")
+        setRowsPerPage(preRowPage);
+        setLoading(false);
+      })
   }
 
   const handleClose = () => {
@@ -196,32 +198,34 @@ function App() {
       setLoading(true);
       let api = new API();
       api
-      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
-      .then((data) => {
-        if(data.response.docs === [] && manufacturerFilter !== "All" && modelFilter !== "All" && yearFilter !== "All"){
-          api.post('/localhost:5000', {
-            manufacturer : manufacturerFilter ,
-            model: modelFilter,
-            year: yearFilter,
-          })
-        }
-        setStart(0);
-        setComments(data.response.docs);
-        setSpeedQ(data.responseHeader.QTime);
-        setMaxRowNo(data.response.numFound-1);
-        setChart({
-          labels: ['positive','negative'],
-          datasets:[
-              {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-              backgroundColor: ["#b91d47","#2b5797"]}
-          ]
-        });
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError("Error filtering");
-        setLoading(false);
-      })
+        .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${currentSearchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+        .then((data) => {
+          if (data.response.docs === [] && manufacturerFilter !== "All" && modelFilter !== "All" && yearFilter !== "All") {
+            api.post('/localhost:5000', {
+              manufacturer: manufacturerFilter,
+              model: modelFilter,
+              year: yearFilter,
+            })
+          }
+          setStart(0);
+          setComments(data.response.docs);
+          setSpeedQ(data.responseHeader.QTime);
+          setMaxRowNo(data.response.numFound - 1);
+          setChart({
+            labels: ['positive', 'negative'],
+            datasets: [
+              {
+                data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
+                backgroundColor: ["#b91d47", "#2b5797"]
+              }
+            ]
+          });
+          setLoading(false);
+        })
+        .catch((error) => {
+          setError("Error filtering");
+          setLoading(false);
+        })
     }
   }
 
@@ -229,32 +233,34 @@ function App() {
     setLoading(true);
     let api = new API();
     api
-    // 1. Get the query path - Solr
-    // 2. Add stats Label to sum for the sentimental result
-    .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
-    .then((data) => {
-      setStart(0);
-      setCurrentSearchInput(searchInput);
-      // get query speed
-      setSpeedQ(data.responseHeader.QTime);
-      // get all json data
-      setComments(data.response.docs);
-      // get the total search result
-      setMaxRowNo(data.response.numFound-1);
-      // diplay Pie chart data
-      setChart({
-        labels: ['positive','negative'],
-        datasets:[
-            {data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count-data.stats.stats_fields.LABEL.sum],
-            backgroundColor: ["#b91d47","#2b5797"]}
-        ]
-      });
-      setLoading(false);
-    })
-    .catch((error) => {
-      setError("Error found. Unable to search");
-      setLoading(false);
-    })
+      // 1. Get the query path - Solr
+      // 2. Add stats Label to sum for the sentimental result
+      .get(createQuery(`${ENDPOINT}/solr/info_retrieval/select?q=${searchInput ? tokenizeSentence(searchInput) : '*:*'}&rows=${rowsPerPage}&start=0&stats=true&stats.field=LABEL`))
+      .then((data) => {
+        setStart(0);
+        setCurrentSearchInput(searchInput);
+        // get query speed
+        setSpeedQ(data.responseHeader.QTime);
+        // get all json data
+        setComments(data.response.docs);
+        // get the total search result
+        setMaxRowNo(data.response.numFound - 1);
+        // diplay Pie chart data
+        setChart({
+          labels: ['positive', 'negative'],
+          datasets: [
+            {
+              data: [data.stats.stats_fields.LABEL.sum, data.stats.stats_fields.LABEL.count - data.stats.stats_fields.LABEL.sum],
+              backgroundColor: ["#b91d47", "#2b5797"]
+            }
+          ]
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError("Error found. Unable to search");
+        setLoading(false);
+      })
   }
 
   const setError = (text) => {
@@ -275,7 +281,7 @@ function App() {
         <div className='searchBarStyle'>
           <div className='searchBarStyle_container'>
             <input type="search" placeholder="Input your search"
-              value={searchInput} onChange={(event) => { 
+              value={searchInput} onChange={(event) => {
                 setSearchInput(event.target.value);
               }}
             />
@@ -295,7 +301,7 @@ function App() {
                     <MenuItem value={20}>20</MenuItem>
                   </Select>
                 </FormControl>
-                <IconButton onClick={() => {setDialogOpen(true)}}>
+                <IconButton onClick={() => { setDialogOpen(true) }}>
                   <FilterListIcon />
                 </IconButton>
               </div>
@@ -303,25 +309,25 @@ function App() {
           </div>
         </div>
         {
-          !(loading) && (comments.length > 0)&&(
+          !(loading) && (comments.length > 0) && (
             <div className='resultStyle'>
-              <p>About {maxRowNo+1} results ({speedQ} milliseconds)</p>
+              <p>About {maxRowNo + 1} results ({speedQ} milliseconds)</p>
             </div>
           )
         }
         {
           (loading) ? (
             <div className='loadingStyle'>
-                <CircularProgress size={40} />
+              <CircularProgress size={40} />
             </div>
           ) : (
             <List className="transbox">
               {
                 comments.map((info_retrieval) =>
-                  <Post key={info_retrieval.id} info_retrieval={info_retrieval} handleSearch={handleSearch} />                  
+                  <Post key={info_retrieval.id} info_retrieval={info_retrieval} handleSearch={handleSearch} />
                 )
               }
-            </List>   
+            </List>
           )
         }
         {
@@ -333,20 +339,20 @@ function App() {
           !(loading) && (comments.length > 0) && (
             <div>
               <div className='pageStyle'>
-                <h5>Displaying {start+1} to {start+rowsPerPage > maxRowNo ? maxRowNo+1 : start+rowsPerPage} of {maxRowNo+1} comments.</h5>
-                <IconButton onClick={() => {flipPage(start-rowsPerPage)}} disabled={start === 0 ? true : false} >
+                <h5>Displaying {start + 1} to {start + rowsPerPage > maxRowNo ? maxRowNo + 1 : start + rowsPerPage} of {maxRowNo + 1} comments.</h5>
+                <IconButton onClick={() => { flipPage(start - rowsPerPage) }} disabled={start === 0 ? true : false} >
                   <ArrowBackIosIcon />
                 </IconButton>
-                <IconButton onClick={() => {flipPage(start+rowsPerPage)}} disabled={start+rowsPerPage > maxRowNo ? true : false}>
+                <IconButton onClick={() => { flipPage(start + rowsPerPage) }} disabled={start + rowsPerPage > maxRowNo ? true : false}>
                   <ArrowForwardIosIcon />
                 </IconButton>
               </div>
               <div>
-                <div className='PieStyle'> 
-                  <Pie 
+                <div className='PieStyle'>
+                  <Pie
                     data={chart}
                     options={options}
-                    >
+                  >
                   </Pie>
                 </div>
               </div>
@@ -354,23 +360,23 @@ function App() {
           )
         }
       </div>
-      <div style={{marginTop: "10px"}}/>
-      <Snackbar 
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      open={errorBarOpen}
-      autoHideDuration={6000}
-      onClose={closeError}
-      message={errorText}
-      action={
-        <React.Fragment>
-          <IconButton size="small" aria-label="close" color="inherit" onClick={closeError}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </React.Fragment>
-      }
+      <div style={{ marginTop: "10px" }} />
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        open={errorBarOpen}
+        autoHideDuration={6000}
+        onClose={closeError}
+        message={errorText}
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={closeError}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
       />
       <Dialog onClose={handleClose} open={dialogOpen}>
         <DialogTitle><b>Sort</b></DialogTitle>
@@ -378,7 +384,7 @@ function App() {
           <div />
           <FormControl component="fieldset" className="formControlStyle">
             <FormLabel component="legend">Direction</FormLabel>
-            <RadioGroup value={sortDirection} onChange={(event) => {setSortDirection(event.target.value)}}>
+            <RadioGroup value={sortDirection} onChange={(event) => { setSortDirection(event.target.value) }}>
               <FormControlLabel value="desc" control={<Radio />} label="Most Helpful" />
               <FormControlLabel value="asc" control={<Radio />} label="Least Helpful" />
             </RadioGroup>
@@ -389,52 +395,51 @@ function App() {
           <div />
           <FormControl variant="outlined" className="formControlStyle">
             <FormLabel component="legend">Manufacturer</FormLabel>
-              <Select
-                value={manufacturerFilter}
-                defaultValue={'All'}
-                onChange={(event) => {setManufacturerFilter(event.target.value)}}
-                label="Manufacturer"
-              >
-                {
-                  Object.keys(data).map((MANUFACTURER) => 
+            <Select
+              value={manufacturerFilter}
+              defaultValue={'All'}
+              onChange={(event) => { setManufacturerFilter(event.target.value) }}
+              label="Manufacturer"
+            >
+              {
+                Object.keys(data).map((MANUFACTURER) =>
                   <MenuItem value={`${MANUFACTURER}`}>{MANUFACTURER}</MenuItem>
                 )
-                }
-              </Select>
+              }
+            </Select>
           </FormControl>
           <div />
           <FormControl variant="outlined" className="formControlStyle">
             <FormLabel component="legend">Model</FormLabel>
-              <Select
-                value={modelFilter}
-                onChange={(event) => {setModelFilter(event.target.value)}}
-                label="Manufacturer"
-              >
-                {
-                  manufacturerFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> : 
-                  ["All"].concat(Object.keys(data[manufacturerFilter])).map((MODEL) => 
-                    {
-                      return <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
-                    }
+            <Select
+              value={modelFilter}
+              onChange={(event) => { setModelFilter(event.target.value) }}
+              label="Manufacturer"
+            >
+              {
+                manufacturerFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> :
+                  ["All"].concat(Object.keys(data[manufacturerFilter])).map((MODEL) => {
+                    return <MenuItem value={`${MODEL}`}>{MODEL}</MenuItem>
+                  }
                   )
-                }
-              </Select>
+              }
+            </Select>
           </FormControl>
           <div />
           <FormControl variant="outlined" className="formControlStyle">
             <FormLabel component="legend">Year</FormLabel>
-              <Select
-                value={yearFilter}
-                onChange={(event) => {setYearFilter(event.target.value)}}
-                label="Year"
-              >
+            <Select
+              value={yearFilter}
+              onChange={(event) => { setYearFilter(event.target.value) }}
+              label="Year"
+            >
               {
-                modelFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> : 
-                ["All"].concat(data[manufacturerFilter][modelFilter]).map((YEAR) => 
-                  <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
-                )
+                modelFilter === "All" ? <MenuItem value={`All`}>All</MenuItem> :
+                  ["All"].concat(data[manufacturerFilter][modelFilter]).map((YEAR) =>
+                    <MenuItem value={`${YEAR}`}>{YEAR}</MenuItem>
+                  )
               }
-              </Select>
+            </Select>
           </FormControl>
         </DialogContent>
       </Dialog>
