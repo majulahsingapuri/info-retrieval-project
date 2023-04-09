@@ -16,3 +16,6 @@ __pycache__/
 # Ignore env files
 .env
 .flaskenv
+
+Other large Files
+*.mp4
