@@ -16,7 +16,6 @@ There are several moving elements to this application and they are summarised as
 You will need Docker in order to run the application. The commands are
 
 ```bash
-docker compose build --no-cache
 docker compose up -d
 ```
 
@@ -31,3 +30,15 @@ To delete the images run
 ```bash
 docker compose down
 ```
+
+## Initial Setup
+
+1. Start the containers with the docker command above.
+2. Navigate to the [Solr Server](http://localhost/solr/).
+3. Create a new collection called `info_retrieval`.
+4. Upload the `data.csv` file found at the root directory to this collection
+   1. Go to the collection.
+   2. Go to the `Documents` section
+   3. Change Document type to File upload
+   4. Select the csv file and then press submit
+5. Navigate to the [Homepage](http://localhost) of the app.

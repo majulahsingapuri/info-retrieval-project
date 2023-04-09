@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import API, { ENDPOINT } from "../../Api/API";
 
-const Post = ({ review, handleSearch }) => {
+const Post = ({ review }) => {
     const [post, setPost] = useState(review);
 
     const updateVote = (num) => {
@@ -22,14 +22,10 @@ const Post = ({ review, handleSearch }) => {
             "VOTES": [parseInt(review.VOTES) + num],
             "id": review.id
         }
+        setPost(updateVotingsData);
 
         let api = new API();
-        api
-            .post(`${ENDPOINT}/solr/info_retrieval/update/json/docs?commitWithin=1000&overwrite=true`, updateVotingsData)
-            .then((data) => {
-                setPost(updateVotingsData);
-                handleSearch();
-            });
+        api.post(`${ENDPOINT}/solr/info_retrieval/update/json/docs?commitWithin=1000&overwrite=true`, updateVotingsData)
     }
 
     // Print label in words

@@ -42,6 +42,7 @@ def process(body: RequestData):
     reviews["YEAR"] = body.year
     reviews["MANUFACTURER"] = body.manufacturer
     reviews["MODEL"] = body.model
+    reviews["VOTES"] = 0
 
     print("Adding data to database...")
     url = f"http://{config.solr_url}:8983/solr/info_retrieval/update/json/docs?commitWithin=1000&overwrite=true"
